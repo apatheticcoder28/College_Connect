@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title class="custom-h1">College Connect</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Jan 09 2024 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+
+ <!-- ======= Header ======= -->
+ <header id="header" class="header fixed-top d-flex align-items-center">
+
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="/home" class="logo d-flex align-items-center" style="width: 150px;height: 10px;">
+      <img src="/assets/img/logo.png" alt="logo" style="height: 55px;">
+    </a>
+    
+  </div><!-- End Logo -->
+
+  <div class="input-group search-bar" style="width: 30rem;">
+    <form class="search-form d-flex align-items-center" method="GET" action="/search" onsubmit="return validateSearch()">
+        <input type="text" class="form-control" id="queryInput" name="query" placeholder="Search" title="Enter Username" required>
+        <div class="input-group-append">
+            <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </div>  
+    </form>
+</div>
+
+<script>
+    function validateSearch() {
+        const inputElement = document.getElementById('queryInput');
+        const input = inputElement.value;
+        const cleanedInput = input.replace(/[^a-zA-Z\s]/g, ''); 
+        const normalizedInput = cleanedInput.replace(/\s{2,}/g, ' ').trim();
+        inputElement.value = normalizedInput;
+        if (normalizedInput === '') {
+            alert('Please enter a valid username.');
+            return false;
+        }
+        return true;
+    }
+    document.getElementById('queryInput').addEventListener('input', function() {
+        let input = this.value;
+        input = input.replace(/[^a-zA-Z\s]/g, '');
+        input = input.replace(/\s{2,}/g, ' ');
+        this.value = input;
+    });
+</script>
+
+<!-- Replace the existing nav section -->
+<nav class="header-nav ms-auto">
+  <ul class="d-flex align-items-center">
+    <!-- Create Post Button -->
+    <li class="nav-item">
+      <a class="nav-link" href="/create-post" title="Create Post">
+        <i class="bi bi-plus-circle"></i>
+        <small>Post</small>
+      </a>
+    </li>
+
+    <!-- Create Poll Button -->
+    <li class="nav-item">
+      <a class="nav-link" href="/createPoll" title="Create Poll">
+        <i class="bi bi-clipboard-data"></i>
+        <small>Poll</small>
+      </a>
+    </li>
+
+    <!-- Chat Button -->
+    <li class="nav-item">
+      <a class="nav-link" href="/chat" title="Chat">
+        <i class="bi bi-chat-dots"></i>
+        <small>Chat</small>
+      </a>
+    </li>
+
+    <!-- Events Button -->
+    <li class="nav-item">
+      <a class="nav-link" href="/user/events" title="Events">
+        <i class="bi bi-calendar-event"></i>
+        <small>Events</small>
+      </a>
+    </li>
+
+      <li class="nav-item dropdown">
+        <button class="nav-link nav-icon" data-bs-toggle="dropdown">
+          <i class="bi bi-bell"></i>
+          <span class="badge bg-primary badge-number" id="badge-number">0</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+          <li class="dropdown-header" id="dropdown-header">No Notifications</li>
+          <!-- Change this line -->
+          <div id="notification-list" class="notification-scroll"></div>
+          <li class="dropdown-footer">
+              <button class="btn btn-danger btn-sm clear-all">Clear All Notifications</button>
+          </li>
+      </ul>
+      </li>
+      <li class="nav-item dropdown pe-3">
+        <a
+          class="nav-link nav-profile d-flex align-items-center pe-0"
+          href="#"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="/assets/img/<%= user.ProfileImg %>"
+            alt="Profile"
+            class="rounded-circle"
+            style="width: 40px; height: 40px;"
+          />
+          <span class="d-none d-md-block dropdown-toggle ps-2">
+            <%= user.Username %>
+          </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="/profile">
+              <i class="bi bi-person"></i> Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="/settings">
+              <i class="bi bi-gear"></i> Settings
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider" />
+          </li>
+          <li>
+            <a class="dropdown-item d-flex align-items-center" href="/logout">
+              <i class="bi bi-box-arrow-right"></i> Logout
+            </a>
+          </li>
+        </ul>
+      </li>
+      
+      <style>
+
+.notification-item[data-notification-type="post-delete"],
+.notification-item[data-notification-type="poll-delete"] {
+    background-color: #fff3f3;
+    border-left: 3px solid #dc3545;
+}
+
+.notification-item[data-notification-type="post-delete"]:hover,
+.notification-item[data-notification-type="poll-delete"]:hover {
+    background-color: #ffe9e9;
+}
+
+        .notification-username {
+    font-weight: 600;
+    color: #012970;
+    margin-right: 5px;
+}
+
+.notification-item[data-notification-type="comment"] {
+    background-color: #f8f9fa;
+    border-left: 3px solid #4154f1;
+}
+
+.notification-item[data-notification-type="comment"]:hover {
+    background-color: #e9ecef;
+}
+
+      .notifications {
+        min-width: 300px;
+        max-width: 350px;
+        padding: 10px;
+        box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
+      }
+      
+      .notification-scroll {
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #4154f1 #f6f9ff;
+      }
+      
+      .notification-scroll::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      .notification-scroll::-webkit-scrollbar-track {
+        background: #f6f9ff;
+      }
+      
+      .notification-scroll::-webkit-scrollbar-thumb {
+        background-color: #4154f1;
+        border-radius: 20px;
+      }
+      
+      .notification-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 15px;
+        border-bottom: 1px solid #f6f9ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+      
+      .notification-item:hover {
+        background: #f6f9ff;
+      }
+      
+      .notification-item .delete-notification {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        padding: 3px 6px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .notification-item:hover .delete-notification {
+        opacity: 1;
+      }
+      
+      .notification-content {
+        flex: 1;
+        margin-left: 15px;
+      }
+      
+      .notification-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #012970;
+      }
+      
+      .notification-message {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      
+      .notification-time {
+        font-size: 11px;
+        color: #919191;
+      }
+      
+      .dropdown-header {
+        text-align: center;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #012970;
+      }
+      
+      .dropdown-footer {
+        text-align: center;
+        padding: 10px;
+        border-top: 1px solid #f6f9ff;
+      }
+      
+      .clear-all {
+        width: 100%;
+        background: #dc3545;
+        border: none;
+        color: white;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      
+      .clear-all:hover {
+        background: #bb2d3b;
+      }
+
+      .notification-item[data-notification-type="poll-join"] {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+      }
+
+      .notification-item[data-notification-type="poll-leave"] {
+        background-color: #f8f9fa;
+        border-left: 3px solid #dc3545;
+      }
+
+      .notification-message.leave {
+          color: #dc3545;
+      }
+
+      </style>
+      <script>
+        function getNotifications(callback) {
+  fetch('/api/get-notifications')
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      callback(data.Notifications || []);
+    })
+    .catch(error => {
+      console.error('Error fetching notifications:', error);
+      callback([]);
+    });
+}
+// Function to display notifications in the UI
+function displayNotifications() {
+    getNotifications(function (notifications) {
+        const notificationDiv = document.getElementById("notification-list");
+        if (!notificationDiv) return;
+
+        notificationDiv.innerHTML = ""; // Clear existing notifications
+
+        notifications.forEach(function (notification) {
+            const listItem = document.createElement("div");
+            listItem.className = "notification-item";
+            listItem.setAttribute("data-notification-id", notification._id);
+
+            const timeAgo = timeSince(new Date(notification.timestamp));
+
+            let notificationHTML = "";
+
+            // Handle 'post-delete' and 'poll-delete'
+            if (notification.type === "post-delete" || notification.type === "poll-delete") {
+                listItem.setAttribute("data-notification-type", notification.type);
+                notificationHTML = `
+                    <img src="/assets/img/${notification.sender?.ProfileImg || "default-admin.jpg"}"
+                         class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                    <div class="notification-content">
+                        <div class="notification-message">
+                            <span class="notification-username">Admin</span>
+                            ${notification.message}
+                        </div>
+                        <div class="notification-time">${timeAgo}</div>
+                    </div>
+                    <button class="btn btn-sm btn-danger delete-notification">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+            } 
+            // Handle 'poll-join' and 'poll-leave'
+            else if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                const senderName = notification.sender?.Username || 
+                    (notification.sender?.FirstName && notification.sender?.LastName
+                        ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                        : "Unknown User");
+
+                notificationHTML = `
+                    <img src="/assets/img/${notification.sender?.ProfileImg || "default.jpg"}"
+                         class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                    <div class="notification-content">
+                        <div class="notification-message ${notification.type === 'poll-leave' ? 'leave' : ''}">
+                            <span class="notification-username">${senderName}</span>
+                            ${notification.type === 'poll-join' ? 'has joined your poll' : 'has left your poll'}
+                            <br>
+                            <small class="text-muted">Poll: ${notification.pollTitle || 'Untitled Poll'}</small>
+                        </div>
+                        <div class="notification-time">${timeAgo}</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm delete-notification" 
+                            onclick="deleteNotification('${notification._id}', event)"
+                            style="padding: 2px 5px; font-size: 0.7rem;">
+                        <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                    </button>
+                `;
+            } 
+            // Handle other notification types
+            else {
+                const senderName = notification.sender?.FirstName && notification.sender?.LastName
+                    ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                    : "Unknown User";
+
+                const messageWithoutName = notification.message.replace(
+                    `${senderName}`, ""
+                ).trim();
+
+                notificationHTML = `
+                    <img src="/assets/img/${notification.sender?.ProfileImg || 'default.jpg'}" 
+                         class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                    <div class="notification-content">
+                        <div class="notification-message">
+                            <span class="notification-username">${senderName}</span>
+                            ${messageWithoutName}
+                        </div>
+                        <div class="notification-time">${timeAgo}</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm delete-notification" 
+                            onclick="deleteNotification('${notification._id}', event)"
+                            style="padding: 2px 5px; font-size: 0.7rem;">
+                        <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                    </button>
+                `;
+            }
+
+            // Set HTML and add event listeners
+            listItem.innerHTML = notificationHTML;
+            listItem.addEventListener("click", (e) => {
+                if (!e.target.closest(".delete-notification")) {
+                    if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                        window.location.href = `/poll/${notification.pollId}`;
+                    } else {
+                        handleNotificationClick(notification._id);
+                    }
+                }
+            });
+
+            listItem.style.cursor = "default";
+            notificationDiv.appendChild(listItem);
+        });
+
+        // Update badge and header
+        const badgeNumber = document.getElementById("badge-number");
+        const dropdownHeader = document.getElementById("dropdown-header");
+
+        if (badgeNumber) badgeNumber.textContent = notifications.length;
+        if (dropdownHeader) {
+            dropdownHeader.textContent =
+                notifications.length > 0
+                    ? `You have ${notifications.length} notification(s)`
+                    : "No Notifications";
+        }
+    });
+}
+
+
+function timeSince(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+
+    if (seconds < 60) {
+        return `${seconds} seconds ago`;
+    }
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) {
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) {
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+    }
+
+    const days = Math.floor(hours / 24);
+    if (days < 30) {
+        return `${days} day${days > 1 ? 's' : ''} ago`;
+    }
+
+    const months = Math.floor(days / 30);
+    if (months < 12) {
+        return `${months} month${months > 1 ? 's' : ''} ago`;
+    }
+
+    const years = Math.floor(months / 12);
+    return `${years} year${years > 1 ? 's' : ''} ago`;
+}
+
+async function deleteNotification(notificationId, event) {
+  event.stopPropagation();
+  try {
+    await fetch(`/api/delete-notification/${notificationId}`, { method: 'DELETE' });
+    displayNotifications();
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+  }
+}
+
+document.querySelector('.clear-all')?.addEventListener('click', async () => {
+  try {
+    await fetch('/api/clear-notifications', { method: 'DELETE' });
+    displayNotifications();
+  } catch (error) {
+    console.error('Error clearing notifications:', error);
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  displayNotifications();
+  setInterval(displayNotifications, 30000); // Refresh every 30 seconds
+});
+      </script>
+      
+      
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          // Initialize all dropdowns
+          var dropdownElementList = [].slice.call(
+            document.querySelectorAll('[data-bs-toggle="dropdown"]')
+          );
+          var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl);
+          });
+        });
+        </script>
+  </nav><!-- End Icons Navigation -->
+  <script>
+    async function handleNotificationClick(notificationId) {
+      try {
+        // Mark notification as read
+        await fetch(`/api/mark-notification-read/${notificationId}`, {
+          method: 'POST'
+        });
+  
+        // Get redirect URL
+        const response = await fetch(`/api/notification-redirect/${notificationId}`);
+        const data = await response.json();
+        
+        if (data.success && data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        }
+      } catch (error) {
+        console.error('Error handling notification click:', error);
+      }
+    }
+  
+    // Update your notification item click handler
+    document.querySelectorAll('.notification-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const notificationId = this.dataset.notificationId;
+        handleNotificationClick(notificationId);
+      });
+    });
+  </script>
+</header><!-- End Header -->
+
+<main id="main" class="main">
+  <% if(messages.Success) { %>
+    <div id="flash-message" class="alert alert-success text-center">
+      <%= messages.Success[0].message %>
+    </div>
+  <% } %>
+
+  <div class="intro-section">
+    <div class="intro-content">
+        <h1 class="glowing-text">College Connect</h1>
+        <p class="typing-text">Connect • Collaborate • Create</p>
+    </div>
+  </div><!-- End Page Title -->
+
+  <section class="section">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Suggested Users Section on the Left -->
+            <div class="col-lg-3">
+              <div class="suggested-users-container">
+                <h5 class="custom-h3 card-title text-center"><b>Recently Joined Users</b></h5>
+                <ul class="list-group" id="suggestedUsersList">
+                  <!-- Users will be rendered here via JavaScript -->
+                </ul>
+                <div class="pagination-buttons mt-3">
+                  <button id="previousButton" class="arrow-button" onclick="previousPage()" disabled>&larr; Previous</button>
+                  <button id="moreButton" class="arrow-button" onclick="nextPage()">Next &rarr;</button>
+                </div>
+              </div>
+            </div>
+            
+            <script>
+              let currentPage = 0; // Track the current page
+              const usersPerPage = 7; // Number of users per page
+              const maxUsersToShow = 14; // Maximum number of users to display across all pages
+            
+              // Current user's ID
+              const currentUserId = '<%= user.ID %>';
+            
+              // Filter out the current user and admin profiles, sort by join date, and limit to 14 users
+              const recentUsers = <%- JSON.stringify(suggested) %>
+              .filter(user => {
+                // Debug log to see the full user object
+                console.log('User object:', user);
+                
+                // Exclude current user and admin users
+                const isCurrentUser = user.ID === currentUserId;
+                const isAdmin = user.Role === 'admin';
+                return !isCurrentUser && !isAdmin;
+              })
+              .sort((a, b) => new Date(b.JoinedAt) - new Date(a.JoinedAt))
+              .slice(0, maxUsersToShow); // Limit to a maximum of 14 users
+            
+              function renderUsers(page) {
+                const userList = document.getElementById('suggestedUsersList');
+                userList.innerHTML = ''; // Clear the list
+            
+                const start = page * usersPerPage;
+                const end = Math.min(start + usersPerPage, recentUsers.length);
+            
+                for (let i = start; i < end; i++) {
+                  const user = recentUsers[i];
+                  userList.innerHTML += `
+                    <li class="list-group-item">
+                      <a href="/profileview/${user.ID}" class="profile-container">
+                        ${i < 10 ? '<span class="recently-joined-badge">Recently Joined</span>' : ''}
+                        <img src="/assets/img/${user.ProfileImg}" class="profile-image" alt="Profile Image">
+                        <div class="profile-details">
+                          <p class="username">${user.FirstName} ${user.LastName}</p>
+                          <p class="info"><b>Bsc/${user.Department} ${user.Year} year</b></p>
+                        </div>
+                      </a>
+                    </li>
+                  `;
+                }
+            
+                // Update the pagination buttons
+                document.getElementById('previousButton').disabled = page === 0;
+                document.getElementById('moreButton').disabled = end >= recentUsers.length;
+              }
+            
+              function nextPage() {
+                if ((currentPage + 1) * usersPerPage < recentUsers.length) {
+                  currentPage++;
+                  renderUsers(currentPage);
+                }
+              }
+            
+              function previousPage() {
+                if (currentPage > 0) {
+                  currentPage--;
+                  renderUsers(currentPage);
+                }
+              }
+            
+              // Initial render on page load
+              document.addEventListener('DOMContentLoaded', () => {
+                renderUsers(currentPage);
+              });
+            </script>
+            
+            
+        <!-- End Suggested Users Section -->
+        <!-- Posts Section -->
+        <% if (user.Role === 'admin') { %>
+          <div class="admin-actions">
+              <button class="btn btn-danger btn-sm" onclick="confirmDelete('<%= post._id %>', 'post')">
+                  <i class="bi bi-trash"></i> Delete
+              </button>
+          </div>
+      <% } %>
+        <div class="col-lg-9">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title custom-h2 text-center"><b>Posts</b></h2>
+              <!-- Empty container for JavaScript to fill -->
+              <div class="row g-4" id="postsContainer">
+                <!-- No EJS rendering here -->
+              </div>
+              <div class="pagination-buttons mt-3">
+                <button id="previousPostsButton" class="arrow-button" onclick="previousPosts()" disabled>&larr; Previous</button>
+                <button id="morePostsButton" class="arrow-button" onclick="nextPosts()">Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </div>        
+        <script>
+          const allPosts = <%- JSON.stringify(posts) %>; // Posts data from server
+          const postsPerPage = 6; // Number of posts per page
+          let currentPostPage = 0; // Start from the first page
+        
+          // Function to sort posts by date in descending order (newest first)
+          function sortPostsDescending(posts) {
+            return [...posts].sort((a, b) => {
+              // First try to use createdAt if it exists
+              if (a.createdAt && b.createdAt) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+              } 
+              // If no createdAt, try to use PID (MongoDB ObjectIds contain a timestamp component)
+              else if (a.PID && b.PID) {
+                return b.PID.localeCompare(a.PID);
+              }
+              return 0;
+            });
+          }
+        
+          // Function to render posts for the current page
+          function renderPosts(page) {
+            const postsContainer = document.getElementById('postsContainer');
+            if (!postsContainer) return;
+        
+            postsContainer.innerHTML = ''; // Clear the container before rendering
+        
+            // Get the sorted posts
+            const sortedPosts = sortPostsDescending(allPosts);
+            
+            // Calculate start and end indices for the current page
+            const start = page * postsPerPage;
+            const end = Math.min(start + postsPerPage, sortedPosts.length);
+        
+            // Render the posts for the current page
+            for (let i = start; i < end; i++) {
+              const post = sortedPosts[i];
+              postsContainer.innerHTML += `
+                <div class="col-12 col-md-6 col-lg-4">
+                  <a href="/post/${post.PID}" class="post-link">
+                    <div class="post-card">
+                      <div class="post-header">
+                        <img src="/assets/img/${post.ProfileImg}" class="profile-image" alt="Profile Image">
+                        <div class="profile-info">
+                          <p class="username">${post.Username}</p>
+                          <p class="department">Bsc.${post.Department} ${post.Year} year</p>
+                        </div>
+                      </div>
+                      <div class="post-image-container">
+                        <img src="/assets/img/${post.Image}" class="post-image" alt="Post Image">
+                      </div>
+                      <div class="post-content">
+                        <h5 class="post-title">Title: ${post.Title}</h5>
+                        <p class="post-caption">Caption: ${post.Caption}</p>
+                        <p class="post-tags">Tags: ${post.Tags}</p>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              `;
+            }
+        
+            // Update button states
+            document.getElementById('previousPostsButton').disabled = page === 0;
+            document.getElementById('morePostsButton').disabled = end >= sortedPosts.length;
+          }
+        
+          // Function to handle the "Next" button click
+          function nextPosts() {
+            const sortedPosts = sortPostsDescending(allPosts);
+            if ((currentPostPage + 1) * postsPerPage < sortedPosts.length) {
+              currentPostPage++;
+              renderPosts(currentPostPage);
+            }
+          }
+        
+          // Function to handle the "Previous" button click
+          function previousPosts() {
+            if (currentPostPage > 0) {
+              currentPostPage--;
+              renderPosts(currentPostPage);
+            }
+          }
+        
+          // Call renderPosts when the DOM is loaded
+          document.addEventListener('DOMContentLoaded', function() {
+            renderPosts(currentPostPage);
+          });
+        </script>
+        
+        <!-- Polls Section -->
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="card-title custom-h2 text-center"><b>Polls</b></h2>
+              <div class="row g-4" id="pollsContainer">
+                <!-- Polls will be rendered here by JavaScript -->
+              </div>
+              <div class="pagination-buttons mt-3">
+                <button id="previousPollsButton" class="arrow-button" onclick="previousPolls()" disabled>&larr; Previous</button>
+                <button id="morePollsButton" class="arrow-button" onclick="nextPolls()">Next &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          const allPolls = <%- JSON.stringify(polls) %>; // Polls data from server
+          const pollsPerPage = 8; // Number of polls per page
+          let currentPollPage = 0;
+        
+          // Sort polls by date (newest first)
+          function sortPollsDescending(polls) {
+            return [...polls].sort((a, b) => {
+              if (a.createdAt && b.createdAt) {
+                return new Date(b.createdAt) - new Date(a.createdAt);
+              }
+              return 0;
+            });
+          }
+        
+          // Render owner view
+          function renderOwnerView(poll, currentParticipants, isFull) {
+            return `
+              <div class="mt-3">
+                <div class="participants-section">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">Participants (${currentParticipants}/${poll.MaxParticipants})</h6>
+                    <span class="badge ${isFull ? 'bg-success' : 'bg-primary'}">
+                      ${isFull ? 'Full' : 'Open'}
+                    </span>
+                  </div>
+                </div>
+              </div>`;
+          }
+        
+          // Render participant view
+          function renderParticipantView(poll, currentParticipants) {
+            return `
+              <div class="d-flex justify-content-between gap-2 mt-3">
+                <button class="btn btn-danger flex-grow-1 leave-poll-btn" data-poll-id="${poll._id}">
+                  Leave (${currentParticipants}/${poll.MaxParticipants})
+                </button>
+                <a href="/chat?userId=${poll.OwnerID._id}&userName=${poll.OwnerID.FirstName} ${poll.OwnerID.LastName}" 
+                  class="btn btn-outline-primary flex-grow-1"
+                  title="Chat with organizer">
+                  <i class="bi bi-chat-dots"></i> Chat
+                </a>
+              </div>`;
+          }
+        
+          // Render full view
+          function renderFullView(poll, currentParticipants) {
+            return `
+              <div class="d-flex justify-content-between gap-2 mt-3">
+                <button class="btn btn-secondary flex-grow-1" disabled>
+                  Event Full (${currentParticipants}/${poll.MaxParticipants})
+                </button>
+                <a href="/chat?userId=${poll.OwnerID._id}&userName=${poll.OwnerID.FirstName} ${poll.OwnerID.LastName}" 
+                  class="btn btn-outline-primary flex-grow-1"
+                  title="Chat with organizer">
+                  <i class="bi bi-chat-dots"></i> Chat
+                </a>
+              </div>`;
+          }
+        
+          // Render join view
+          function renderJoinView(poll, currentParticipants) {
+            return `
+              <div class="d-flex justify-content-between gap-2 mt-3">
+                <button class="btn btn-primary flex-grow-1 join-poll-btn" data-poll-id="${poll._id}">
+                  Join Now (${currentParticipants}/${poll.MaxParticipants})
+                </button>
+                <a href="/chat?userId=${poll.OwnerID._id}&userName=${poll.OwnerID.FirstName} ${poll.OwnerID.LastName}" 
+                  class="btn btn-outline-primary flex-grow-1"
+                  title="Chat with organizer">
+                  <i class="bi bi-chat-dots"></i> Chat
+                </a>
+              </div>`;
+          }
+        
+          // Render poll buttons based on user role and poll status
+          function renderPollButtons(poll) {
+            const currentParticipants = poll.participants ? poll.participants.length : 0;
+            const isFull = currentParticipants >= poll.MaxParticipants;
+            const currentUserId = '<%= user.ID %>';
+            const participantIds = poll.participants ? poll.participants.map(p => p._id.toString()) : [];
+            const isParticipant = participantIds.includes(currentUserId);
+            const isOwner = poll.OwnerID._id.toString() === currentUserId;
+        
+            if (new Date(poll.Deadline) <= new Date()) return '';
+        
+            if (isOwner) {
+              return renderOwnerView(poll, currentParticipants, isFull);
+            } else if (isParticipant) {
+              return renderParticipantView(poll, currentParticipants);
+            } else if (isFull) {
+              return renderFullView(poll, currentParticipants);
+            } else {
+              return renderJoinView(poll, currentParticipants);
+            }
+          }
+        
+          // Render polls for the current page
+          function renderPolls(page) {
+  const pollsContainer = document.getElementById('pollsContainer');
+  if (!pollsContainer) return;
+
+  // Sort polls by date (newest first)
+  const sortedPolls = sortPollsDescending(allPolls);
+  
+  // Debug log
+  console.log('Total polls:', sortedPolls.length);
+  console.log('Current page:', page);
+  console.log('Polls per page:', pollsPerPage);
+  
+  pollsContainer.innerHTML = '';
+  const start = page * pollsPerPage;
+  const end = Math.min(start + pollsPerPage, sortedPolls.length);
+  
+  // Debug log
+  console.log('Start index:', start);
+  console.log('End index:', end);
+
+  for (let i = start; i < end; i++) {
+    const poll = sortedPolls[i];
+              const pollHTML = `
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                  <div class="post-card">
+                    <div class="post-header">
+                      <img src="/assets/img/${poll.OwnerID.ProfileImg}" class="profile-image" alt="Profile Image">
+                      <div class="profile-info">
+                        <p class="">${poll.OwnerID.FirstName} ${poll.OwnerID.LastName}</p>
+                        <p class="department">Bsc.${poll.OwnerID.department} ${poll.OwnerID.year} year</p>
+                      </div>
+                    </div>
+                    ${poll.Image ? `
+                      <div class="post-image-container">
+                        <img src="/assets/img/${poll.Image}" 
+                             onerror="this.onerror=null; this.src='/uploads/${poll.Image}'" 
+                             class="post-image" 
+                             alt="Poll Image">
+                      </div>
+                    ` : ''}
+                    <div class="post-content">
+                      <h5 class="post-title">Task: ${poll.Task}</h5>
+                      <p class="post-caption">Description: ${poll.Description}</p>
+                      <div class="poll-details">
+                        <p><i class="bi bi-calendar-event"></i> ${new Date(poll.Date).toLocaleDateString()} at ${poll.Time}</p>
+                        <p><i class="bi bi-geo-alt"></i> ${poll.Location}</p>
+                        <p><i class="bi bi-people"></i> Members needed: ${poll.MaxParticipants}</p>
+                        <p><i class="bi bi-clock"></i> Deadline: ${new Date(poll.Deadline).toLocaleString()}</p>
+                      </div>
+                      ${renderPollButtons(poll)}
+                    </div>
+                  </div>
+                </div>
+              `;
+              pollsContainer.innerHTML += pollHTML;
+            }
+        
+            // Update pagination buttons
+            document.getElementById('previousPollsButton').disabled = page === 0;
+            document.getElementById('morePollsButton').disabled = end >= sortedPolls.length;
+          }
+        
+          // Go to the next page of polls
+          function nextPolls() {
+            if ((currentPollPage + 1) * pollsPerPage < allPolls.length) {
+              currentPollPage++;
+              renderPolls(currentPollPage);
+            }
+          }
+        
+          // Go to the previous page of polls
+          function previousPolls() {
+            if (currentPollPage > 0) {
+              currentPollPage--;
+              renderPolls(currentPollPage);
+            }
+          }
+        
+          // Initial render when the page loads
+          document.addEventListener('DOMContentLoaded', function () {
+            renderPolls(currentPollPage);
+          });
+        </script>
+      </div>
+    </div>
+  </section>
+</main><!-- End #main -->
+
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      &copy; Copyright <strong><span>College Connect</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <style>
+
+.nav-item.dropdown {
+  position: relative;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .dropdown-menu.profile {
+    position: absolute !important;
+    top: 100%;
+    left: 0 !important;
+    right: auto;
+    width: 100%; /* Full width on mobile */
+    z-index: 1050;
+  }
+
+  .nav-profile img {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Ensure dropdown is visible */
+.dropdown-menu.show {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+  .nav-profile img {
+    width: 32px;
+    height: 32px;
+  }
+
+/* Ensure dropdown is visible */
+.dropdown-menu.show {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.nav-profile {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.nav-profile img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #e9ecef;
+}
+
+.dropdown-menu.profile {
+  min-width: 200px;
+  padding: 10px 0;
+  margin-top: 10px;
+  box-shadow: 0 0 30px rgba(1, 41, 112, 0.1);
+  border: none;
+}
+
+.dropdown-menu.profile .dropdown-header h6 {
+  font-size: 18px;
+  margin-bottom: 0;
+  font-weight: 600;
+  color: #012970;
+}
+
+.dropdown-menu.profile .dropdown-item {
+  font-size: 14px;
+  padding: 10px 20px;
+  transition: 0.3s;
+}
+
+.dropdown-menu.profile .dropdown-item i {
+  margin-right: 10px;
+  font-size: 18px;
+  line-height: 0;
+}
+
+.dropdown-menu.profile .dropdown-item:hover {
+  background-color: #f6f9ff;
+  color: #012970;
+}
+
+@media (max-width: 768px) {
+  .nav-profile {
+    padding: 3px;
+  }
+  
+  .nav-profile img {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .dropdown-menu.profile {
+    margin-top: 5px;
+  }
+}
+
+.title-section {
+    text-align: center;
+    padding: 2rem 0;
+    margin-bottom: 3rem;
+}
+
+.animated-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, #4361ee, #3f37c9, #7209b7, #3a0ca3);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient 8s ease infinite, float 3s ease-in-out infinite;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.animated-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #4361ee, #3f37c9);
+    border-radius: 2px;
+    animation: width-animation 3s ease-in-out infinite;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes width-animation {
+    0% { width: 100px; }
+    50% { width: 200px; }
+    100% { width: 100px; }
+}
+
+.intro-section {
+    background: linear-gradient(135deg, #012970 0%, #0d6efd 100%);
+    padding: 3rem 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(1, 41, 112, 0.2);
+    animation: slideIn 0.8s ease-out;
+}
+
+.intro-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.glowing-text {
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-weight: 800;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 15px rgba(13, 110, 253, 0.5),
+                 0 0 25px rgba(13, 110, 253, 0.3);
+    margin: 0;
+    line-height: 1.2;
+    animation: glow 3s ease-in-out infinite alternate,
+               fadeInUp 1s ease-out;
+}
+
+.typing-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    margin-top: 1rem;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-out forwards 0.5s;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 15px rgba(13, 110, 253, 0.5),
+                     0 0 25px rgba(13, 110, 253, 0.3);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(13, 110, 253, 0.7),
+                     0 0 30px rgba(13, 110, 253, 0.5),
+                     0 0 40px rgba(13, 110, 253, 0.3);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Keep existing media queries */
+@media (max-width: 768px) {
+    .intro-section {
+        padding: 2rem 1rem;
+        margin: 1rem;
+        border-radius: 20px;
+    }
+    
+    .intro-content {
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .intro-section {
+        padding: 1.5rem 0.5rem;
+    }
+    
+    .typing-text {
+        margin-top: 0.5rem;
+    }
+}
+
+.header-nav .nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  color: #012970;
+  transition: all 0.2s ease;
+}
+
+.header-nav .nav-link:hover {
+  color: #0d6efd;
+}
+
+.header-nav .nav-link i {
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+.header-nav .nav-link small {
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.nav-item {
+  margin: 0 4px;
+}
+
+@media (max-width: 768px) {
+  .header-nav .nav-link small {
+    display: none;
+  }
+  
+  .header-nav .nav-link i {
+    font-size: 1.4rem;
+    margin-bottom: 0;
+  }
+}
+
+.profile-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.recently-joined-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #007bff;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.recently-joined-badge::before {
+  content: "🔵";
+  font-size: 0.5rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e1e8ed; /* Adjust border color if needed */
+}
+
+    .profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.col-lg-4 .card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease-out;
+}
+
+.col-lg-4 .card:hover {
+  transform: scale(1.05);
+}
+
+.col-lg-4 .card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1); /* Darker overlay color */
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+}
+
+.col-lg-4 .card:hover::before {
+  opacity: 1;
+}
+
+
+                /* Profile container and details */
+        .profile-container {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          padding: 10px;
+          border-radius: 10px;
+          background-color: #f9f9f9;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .profile-container:hover {
+          background-color: #e2e2e2;
+          transform: translateY(-3px);
+        }
+
+        .profile-image {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #ddd;
+          margin-right: 15px;
+        }
+
+        /* Pagination buttons */
+        .pagination-buttons {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 15px;
+        }
+
+        .arrow-button {
+          background-color: #007bff; /* Blue color */
+          color: white;
+          border: none;
+          border-radius: 5px;
+          padding: 8px 16px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .arrow-button:disabled {
+          background-color: #cccccc; /* Disabled button styling */
+          cursor: not-allowed;
+        }
+
+        .arrow-button:hover:not(:disabled) {
+          background-color: #0056b3;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Glowing effect on hover */
+        }
+
+
+        /* Add background to the suggested users section */
+        .suggested-users-container {
+          background-color: white; /* White background */
+          padding: 20px; /* Padding around the content */
+          border-radius: 5px; /* Rounded corners */
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        .profile-container {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          padding: 10px;
+          border-radius: 10px;
+          background-color: #f9f9f9;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .profile-container:hover {
+          background-color: #e2e2e2;
+          transform: translateY(-3px);
+        }
+
+        .profile-image {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid #ddd;
+          margin-right: 15px;
+        }
+
+        .profile-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .username {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .info {
+          font-size: 14px;
+          color: #777;
+        }
+
+        .list-group-item {
+          border: none;
+          padding: 12px 0;
+          background-color: transparent;
+        }
+
+        .list-group-item + .list-group-item {
+          margin-top: 10px;
+        }
+
+
+        .custom-h1 {
+          font-size: 5rem; /* Adjust the size as needed for <h2> */
+          font-weight: bold; /* Ensure bold text */
+          text-align: center; /* Center text *//* Adjust margin if needed */
+          margin-bottom: 2rem;  /* Adjust margin if needed */
+        }
+
+          .custom-h2 {
+          font-size: 2rem; /* Adjust the size as needed for <h2> */
+          font-weight: bold; /* Ensure bold text */
+          text-align: center; /* Center text */
+          margin-bottom: 1rem; /* Adjust margin if needed */
+        } 
+
+        .custom-h3 {
+          font-size: 1.5rem; /* Adjust the size as needed for <h2> */
+          font-weight: bold; /* Ensure bold text */
+          text-align: center; /* Center text */
+          margin-bottom: 1rem; /* Adjust margin if needed */
+        }
+
+        .card-title-center {
+          text-align: center;
+        }
+
+        .suggested-users {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .suggested-users h5 {
+            margin-bottom: 15px;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 10px 0;
+        }
+
+        .list-group-item a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .list-group-item a:hover {
+            color: #0056b3;
+        }
+
+        .fixed-card-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fixed-card-image img {
+            width: 100%;
+            height: auto;
+            max-height: 200px; /* Set the maximum height as needed */
+            object-fit: cover;
+        }
+          
+        .disclaimer {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: grey /* Adjust the color as per your design */
+        }
+
+        /* Enhanced Post Card Styles */
+        .post-link {
+          text-decoration: none;
+          color: inherit;
+          display: block;
+          height: 100%;
+        }
+
+        .post-card {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          overflow: hidden;
+          transition: all 0.3s ease;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .post-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .post-header {
+          display: flex;
+          align-items: center;
+          padding: 12px;
+          background: #f8f9fa;
+          border-bottom: 1px solid #eee;
+        }
+
+        .profile-info {
+          margin-left: 12px;
+        }
+
+        .profile-info .username {
+          font-weight: 600;
+          margin: 0;
+          color: #333;
+        }
+
+        .profile-info .department {
+          font-size: 0.85rem;
+          color: #666;
+          margin: 0;
+        }
+
+        .post-image-container {
+          position: relative;
+          padding-top: 75%; /* 4:3 Aspect Ratio */
+          overflow: hidden;
+        }
+
+        .post-image {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.3s ease;
+        }
+
+        .post-card:hover .post-image {
+          transform: scale(1.05);
+        }
+
+        .post-content {
+          padding: 16px;
+          flex-grow: 1;
+          background: white;
+        }
+
+        .post-title {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-bottom: 8px;
+          color: #2c3e50;
+        }
+
+        .post-caption {
+          font-size: 0.9rem;
+          color: #666;
+          margin-bottom: 8px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .post-tags {
+          font-size: 0.85rem;
+          color: #007bff;
+          margin: 0;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .col-12 {
+            padding: 0 10px;
+          }
+          
+          .post-card {
+            margin-bottom: 20px;
+          }
+        }
+
+/* Poll Card Styles */
+.poll-card {
+  border: none;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.poll-card:hover {
+  transform: translateY(-5px);
+}
+
+.poll-header {
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.poll-image {
+  height: 200px;
+  object-fit: cover;
+}
+
+.card-title {
+  color: #012970;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.description {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.poll-details {
+  margin-top: 10px;
+}
+
+.poll-details p {
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.poll-details i {
+  color: #012970;
+  font-size: 1rem;
+}
+
+.join-poll-btn {
+  background: #012970;
+  border: none;
+  padding: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.join-poll-btn:hover {
+  background: #1a3d8d;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(1, 41, 112, 0.2);
+}
+
+.section-title {
+  color: #012970;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 50px;
+  background: #012970;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .poll-card {
+    margin-bottom: 1rem;
+  }
+  
+  .poll-image {
+    height: 180px;
+  }
+}
+
+/* Animation */
+.poll-card {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.participant-card {
+  background: #ffffff;
+  transition: all 0.2s ease;
+  border: 1px solid #dee2e6;
+}
+
+.participant-card:hover {
+  background: #f8f9fa;
+  transform: translateX(3px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.participants-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.progress {
+  background-color: #e9ecef;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.6s ease;
+}
+
+.participant-info {
+  line-height: 1.2;
+}
+
+.badge {
+  padding: 0.5em 1em;
+  border-radius: 20px;
+}
+
+.college-connect-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    background: linear-gradient(45deg, #4361ee, #3f37c9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo img {
+    transition: transform 0.3s ease;
+  }
+
+  .logo:hover img {
+    transform: scale(1.05);
+  }
+
+  .header {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  </style>
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    window.onload = function() {
+      // Check if flash-message exists
+      var flashMessage = document.getElementById('flash-message');
+      if (flashMessage) {
+        // Set a timeout to remove the flash message after 5 seconds
+        setTimeout(function() {
+          if (flashMessage) {
+            flashMessage.parentNode.removeChild(flashMessage);
+          }
+        }, 5000); // 5000 milliseconds = 5 seconds
+      }
+    };
+  </script>
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Join Poll Handler
+    document.querySelectorAll('.join-poll-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const pollId = this.dataset.pollId;
+        try {
+          const response = await fetch(`/api/join-poll/${pollId}`, {
+            method: 'POST'
+          });
+          const data = await response.json();
+          
+          if (response.ok) {
+            console.log('Successfully joined poll');
+            location.reload(); // Reload to show updated state
+          } else {
+            alert(data.message || 'Failed to join poll');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to join poll');
+        }
+      });
+    });
+
+    // Leave Poll Handler
+    document.querySelectorAll('.leave-poll-btn').forEach(button => {
+      button.addEventListener('click', async function() {
+        const pollId = this.dataset.pollId;
+        if (confirm('Are you sure you want to leave this poll?')) {
+          try {
+            const response = await fetch(`/api/leave-poll/${pollId}`, {
+              method: 'POST'
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+              console.log('Successfully left poll');
+              location.reload(); // Reload to show updated state
+            } else {
+              alert(data.message || 'Failed to leave poll');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            alert('Failed to leave poll');
+          }
+        }
+      });
+    });
+  });
+  </script>
+  <script>
+    function confirmDelete(id, type) {
+        Swal.fire({
+            title: `Delete ${type}?`,
+            text: 'This action cannot be undone',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (type === 'post') {
+                    deletePost(id);
+                } else if (type === 'poll') {
+                    deletePoll(id);
+                }
+            }
+        });
+    }
+    
+    function deletePoll(pollId) {
+        fetch(`/api/polls/${pollId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                Swal.fire('Error!', 'Failed to delete poll.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error!', 'An unexpected error occurred.', 'error');
+        });
+    }
+    </script>
+</body>
+
+</html>

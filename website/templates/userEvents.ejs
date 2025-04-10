@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Connect Events</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #2b2d42;
+            --success: #4cc9f0;
+            --text-primary: #333;
+            --text-secondary: #666;
+            --text-muted: #888;
+            --border-color: #eaeaea;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo img {
+            height: 50px;
+            border-radius: 10px;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+        
+        .logo-text span {
+            color: var(--accent);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 6px;
+        }
+        
+        .calendar-wrapper {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-wrapper:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .calendar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Event Modal */
+        .event-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .event-modal-content {
+            background-color: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .event-modal.active .event-modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .event-modal-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 25px;
+            position: relative;
+        }
+        
+        .event-modal-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .event-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .event-modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .event-modal-body {
+            padding: 25px;
+        }
+        
+        .event-detail {
+            margin-bottom: 20px;
+        }
+        
+        .event-detail-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .event-detail-value {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        
+        .event-description {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .event-time {
+            display: inline-block;
+            background-color: var(--primary-light);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .event-date {
+            display: inline-block;
+            background-color: var(--secondary);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            margin-right: 10px;
+        }
+        
+        /* FullCalendar Custom Styling */
+        .fc-button-primary {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+        }
+        
+        .fc-button-primary:hover {
+            background-color: var(--secondary) !important;
+            border-color: var(--secondary) !important;
+        }
+        
+        .fc-daygrid-day.fc-day-today {
+            background-color: rgba(67, 97, 238, 0.1) !important;
+        }
+        
+        .fc-event {
+            background-color: var(--primary-light) !important;
+            border: none !important;
+            border-radius: 5px !important;
+            padding: 3px 6px !important;
+            font-size: 0.85em !important;
+            transition: transform 0.2s ease;
+        }
+        
+        .fc-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .user-menu {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .calendar-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .fc-header-toolbar {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+<style>
+.notification-item[data-notification-type="post-delete"],
+.notification-item[data-notification-type="poll-delete"] {
+    background-color: #fff3f3;
+    border-left: 3px solid #dc3545;
+}
+
+.notification-item[data-notification-type="post-delete"]:hover,
+.notification-item[data-notification-type="poll-delete"]:hover {
+    background-color: #ffe9e9;
+}
+
+        .notification-username {
+    font-weight: 600;
+    color: #012970;
+    margin-right: 5px;
+}
+
+.notification-item[data-notification-type="comment"] {
+    background-color: #f8f9fa;
+    border-left: 3px solid #4154f1;
+}
+
+.notification-item[data-notification-type="comment"]:hover {
+    background-color: #e9ecef;
+}
+
+      .notifications {
+        min-width: 300px;
+        max-width: 350px;
+        padding: 10px;
+        box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
+      }
+      
+      .notification-scroll {
+        max-height: 400px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #4154f1 #f6f9ff;
+      }
+      
+      .notification-scroll::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      .notification-scroll::-webkit-scrollbar-track {
+        background: #f6f9ff;
+      }
+      
+      .notification-scroll::-webkit-scrollbar-thumb {
+        background-color: #4154f1;
+        border-radius: 20px;
+      }
+      
+      .notification-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 15px;
+        border-bottom: 1px solid #f6f9ff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+      
+      .notification-item:hover {
+        background: #f6f9ff;
+      }
+      
+      .notification-item .delete-notification {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        padding: 3px 6px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      
+      .notification-item:hover .delete-notification {
+        opacity: 1;
+      }
+      
+      .notification-content {
+        flex: 1;
+        margin-left: 15px;
+      }
+      
+      .notification-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+        color: #012970;
+      }
+      
+      .notification-message {
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 5px;
+      }
+      
+      .notification-time {
+        font-size: 11px;
+        color: #919191;
+      }
+      
+      .dropdown-header {
+        text-align: center;
+        padding: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #012970;
+      }
+      
+      .dropdown-footer {
+        text-align: center;
+        padding: 10px;
+        border-top: 1px solid #f6f9ff;
+      }
+      
+      .clear-all {
+        width: 100%;
+        background: #dc3545;
+        border: none;
+        color: white;
+        padding: 8px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+      
+      .clear-all:hover {
+        background: #bb2d3b;
+      }
+
+      .notification-item[data-notification-type="poll-join"] {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+      }
+
+      .notification-item[data-notification-type="poll-leave"] {
+        background-color: #f8f9fa;
+        border-left: 3px solid #dc3545;
+      }
+
+      .notification-message.leave {
+          color: #dc3545;
+      }
+</style>
+
+</head>
+<body>
+
+
+
+<!-- Navbar -->
+
+
+    <div class="container">
+        <!-- Header with Logo -->
+         
+        <!-- Calendar Container -->
+        <div class="calendar-wrapper">
+            <div class="calendar-title">
+                <i class="fas fa-calendar-alt"></i> Your Events Calendar
+            </div>
+            <div id="calendar"></div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2025 College Connect. All rights reserved.</p>
+        </div>
+    </div>
+    
+    <!-- Event Details Modal -->
+    <div class="event-modal" id="eventModal">
+        <div class="event-modal-content">
+            <div class="event-modal-header">
+                <h3 class="event-modal-title" id="eventTitle">Event Title</h3>
+                <button class="event-modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="event-modal-body">
+                <div class="event-detail">
+                    <div class="event-detail-label">
+                        <i class="fas fa-clock"></i> When
+                    </div>
+                    <div class="event-detail-value">
+                        <span class="event-date" id="eventDate">Date</span>
+                        <span class="event-time" id="eventTime">Time</span>
+                    </div>
+                </div>
+                
+                <div class="event-detail">
+                    <div class="event-detail-label">
+                        <i class="fas fa-align-left"></i> Description
+                    </div>
+                    <div class="event-description" id="eventDescription">
+                        No description available.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const eventModal = document.getElementById('eventModal');
+            const closeModal = document.getElementById('closeModal');
+            
+            // Format time to AM/PM
+            function formatTime(dateStr) {
+                if (!dateStr) return 'All day';
+                const date = new Date(dateStr);
+                let hours = date.getHours();
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // the hour '0' should be '12'
+                return `${hours}:${minutes} ${ampm}`;
+            }
+            
+            // Format date to readable format
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString(undefined, options);
+            }
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                buttonText: {
+                    today: 'Today',
+                    month: 'Month',
+                    week: 'Week',
+                    list: 'List'
+                },
+                height: 'auto',
+                events: '/api/events', // Fetch events from the API
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                eventClick: function (info) {
+                    // Show event details in the modal
+                    document.getElementById('eventTitle').textContent = info.event.title;
+                    document.getElementById('eventDate').textContent = formatDate(info.event.start);
+                    document.getElementById('eventTime').textContent = formatTime(info.event.start);
+                    
+                    const description = info.event.extendedProps.description || 'No description available.';
+                    document.getElementById('eventDescription').textContent = description;
+                    
+                    // Show modal with animation
+                    eventModal.style.display = 'flex';
+                    setTimeout(() => {
+                        eventModal.classList.add('active');
+                    }, 10);
+                },
+                // Color events based on their category or time
+                eventDidMount: function(info) {
+                    // Get random color for demonstration
+                    // In a real app, you would base this on event categories
+                    const colors = [
+                        '#4361ee', // Blue
+                        '#3a0ca3', // Purple
+                        '#f72585', // Pink
+                        '#4cc9f0', // Light blue
+                        '#7209b7'  // Dark purple
+                    ];
+                    
+                    const colorIndex = Math.floor(Math.random() * colors.length);
+                    info.el.style.backgroundColor = colors[colorIndex];
+                }
+            });
+
+            calendar.render();
+            
+            // Close modal when clicking the close button
+            closeModal.addEventListener('click', function() {
+                eventModal.classList.remove('active');
+                setTimeout(() => {
+                    eventModal.style.display = 'none';
+                }, 300);
+            });
+            
+            // Close modal when clicking outside the modal content
+            eventModal.addEventListener('click', function(e) {
+                if (e.target === eventModal) {
+                    eventModal.classList.remove('active');
+                    setTimeout(() => {
+                        eventModal.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && eventModal.style.display === 'flex') {
+                    eventModal.classList.remove('active');
+                    setTimeout(() => {
+                        eventModal.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Add animation to calendar
+            setTimeout(() => {
+                document.querySelector('.calendar-wrapper').style.opacity = '0';
+                document.querySelector('.calendar-wrapper').style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    document.querySelector('.calendar-wrapper').style.transition = 'all 0.5s ease';
+                    document.querySelector('.calendar-wrapper').style.opacity = '1';
+                    document.querySelector('.calendar-wrapper').style.transform = 'translateY(0)';
+                }, 100);
+            }, 0);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Posts and Polls</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa;
+            color: #2b2d42;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .card {
+            margin-bottom: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 15px;
+        }
+        .profile-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .user-info div {
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Manage Posts and Polls</h1>
+
+        <!-- Posts Section -->
+        <div class="mb-5">
+            <h2 class="section-title">Posts</h2>
+            <div id="postsContainer" class="row">
+                <!-- Posts will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Polls Section -->
+        <div>
+            <h2 class="section-title">Polls</h2>
+            <div id="pollsContainer" class="row">
+                <!-- Polls will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fetch and display posts
+            fetch('/api/posts')
+                .then(response => response.json())
+                .then(posts => {
+                    const postsContainer = document.getElementById('postsContainer');
+                    posts.forEach(post => {
+                        const postCard = document.createElement('div');
+                        postCard.className = 'col-md-4';
+                        postCard.innerHTML = `
+                            <div class="card">
+                                <img src="/uploads/${post.Image}" alt="${post.Title}">
+                                <div class="card-body">
+                                    <div class="user-info">
+                                        <img src="/uploads/${post.OwnerID.ProfileImg}" class="profile-image" alt="Profile">
+                                        <div>
+                                            <strong>${post.OwnerID.FirstName} ${post.OwnerID.LastName}</strong><br>
+                                            ${post.OwnerID.department} ${post.OwnerID.year} year
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title">${post.Title}</h5>
+                                    <p class="card-text">${post.Caption}</p>
+                                    <button class="btn btn-danger" onclick="deletePost('${post._id}')">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        postsContainer.appendChild(postCard);
+                    });
+                });
+
+            // Fetch and display polls
+            fetch('/api/polls')
+                .then(response => response.json())
+                .then(polls => {
+                    const pollsContainer = document.getElementById('pollsContainer');
+                    polls.forEach(poll => {
+                        const pollCard = document.createElement('div');
+                        pollCard.className = 'col-md-4';
+                        pollCard.innerHTML = `
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${poll.Question}</h5>
+                                    <button class="btn btn-danger" onclick="deletePoll('${poll._id}')">Delete</button>
+                                </div>
+                            </div>
+                        `;
+                        pollsContainer.appendChild(pollCard);
+                    });
+                });
+        });
+
+        // Function to delete a post
+        function deletePost(postId) {
+            fetch(`/api/posts/${postId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Refresh the page to update the list
+                    }
+                });
+        }
+
+        // Function to delete a poll
+        function deletePoll(pollId) {
+            fetch(`/api/polls/${pollId}`, { method: 'DELETE' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload(); // Refresh the page to update the list
+                    }
+                });
+        }
+    
+
+
+async function deletePost(postId) {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    const alertBox = document.createElement('div');
+    alertBox.className = 'custom-alert';
+    alertBox.innerHTML = `
+        <h4>Delete Post</h4>
+        <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+        <div class="buttons">
+            <button class="confirm-delete">Delete</button>
+            <button class="cancel-delete">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(alertBox);
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/admin/delete-post/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                throw new Error('Failed to delete post');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            cleanup();
+        }
+    };
+
+    alertBox.querySelector('.confirm-delete').addEventListener('click', handleDelete);
+    alertBox.querySelector('.cancel-delete').addEventListener('click', cleanup);
+
+    function cleanup() {
+        overlay.remove();
+        alertBox.remove();
+    }
+}
+
+
+
+async function deletePoll(pollId) {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    const alertBox = document.createElement('div');
+    alertBox.className = 'custom-alert';
+    alertBox.innerHTML = `
+        <h4>Delete Poll</h4>
+        <p>Are you sure you want to delete this poll? This action cannot be undone.</p>
+        <div class="buttons">
+            <button class="confirm-delete">Delete</button>
+            <button class="cancel-delete">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(alertBox);
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/admin/delete-poll/${pollId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                throw new Error('Failed to delete poll');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        } finally {
+            cleanup();
+        }
+    };
+
+    alertBox.querySelector('.confirm-delete').addEventListener('click', handleDelete);
+    alertBox.querySelector('.cancel-delete').addEventListener('click', cleanup);
+
+    function cleanup() {
+        overlay.remove();
+        alertBox.remove();
+    }
+}
+
+
+</script>
+</body>
+</html>

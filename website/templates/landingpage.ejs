@@ -1,0 +1,717 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>College Connect</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+
+    <!-- Favicons -->
+    <link href="/assets/img/logo.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+
+    <!-- AngularJS and JS file for rendering data -->  
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="profilePage.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #012970;
+            --secondary-color: #4154f1;
+            --text-color: #444444;
+            --gradient: linear-gradient(135deg, #012970 0%, #4154f1 100%);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+        }
+
+        /* Hero Section */
+        #intro {
+            background: var(--gradient);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            border-radius: 50px 50px 50px 50px;
+            background: var(--gradient);
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+        border-radius: 50px 50px 50px 50px;
+        margin-bottom: 80px;
+        position: relative;
+        overflow: hidden;
+        }
+
+        #intro::before {
+        content: '';
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        animation: rotate 20s linear infinite;
+        top: -50%;
+        left: -50%;
+    }
+
+    @keyframes rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    #intro .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    #intro h1, #intro h2, #intro p {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s forwards;
+    }
+
+    #intro h1 { animation-delay: 0.2s; }
+    #intro h2 { animation-delay: 0.4s; }
+    #intro p { animation-delay: 0.6s; }
+    #intro .mt-4 { 
+        opacity: 0;
+        animation: fadeInUp 0.8s forwards;
+        animation-delay: 0.8s;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .counter {
+        transform: scale(0.9);
+        opacity: 0;
+        transition: all 0.6s ease;
+    }
+
+    .counter.visible {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    .counter h3 {
+        display: inline-block;
+        animation: countUp 2s ease-out forwards;
+    }
+
+    @keyframes countUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+        #intro h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        #intro h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        #intro p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Key Features Section */
+        .keyfeatures {
+            padding: 60px 0;
+        }
+
+        .keyfeatures h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            background: none;
+            margin-bottom: 1rem;
+        }
+
+        /* Sign Up Section */
+        .signup-section {
+            background: var(--gradient);
+            padding: 80px 0;
+            text-align: center;
+            border-radius: 30px;
+            margin: 60px 20px;
+            color: white;
+        }
+
+        .signup-section h2 {
+            color: white !important;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: white;
+            color: var(--primary-color) !important;
+            border: none;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: #f8f9fa;
+        }
+
+        /* About Us Section */
+        #about-us {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        #about-us h1 {
+            margin-bottom: 30px;
+        }
+
+        #about-us p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Contact Section */
+        #contact {
+            background: #f8f9fa;
+            padding: 60px 0;
+            text-align: center;
+            border-radius: 30px;
+            margin: 0 20px;
+        }
+
+        #contact h2 {
+            margin-bottom: 30px;
+        }
+
+        #contact p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gradient);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .footer .copyright {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .counter {
+    padding: 20px;
+    color: white;
+}
+
+.counter h3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.social-links {
+    margin-top: 20px;
+}
+
+.social-links a {
+    color: white;
+    padding: 8px;
+    font-size: 1.2rem;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    color: var(--secondary-color);
+    transform: translateY(-3px);
+}
+
+.contact-info {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-info a {
+    color: var(--primary-color);
+}
+
+.contact-info a:hover {
+    color: var(--secondary-color);
+}
+
+/* Updated About Us Section Styles */
+#about-us {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+#about-us::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 400px;
+    background: var(--gradient);
+    opacity: 0.1;
+    border-radius: 50%;
+    transform: translate(200px, -200px);
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.title-line {
+    width: 80px;
+    height: 4px;
+    background: var(--gradient);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.about-image {
+    position: relative;
+    padding: 20px;
+}
+
+.main-img {
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.main-img:hover {
+    transform: translateY(-10px);
+}
+
+.experience-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--gradient);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.experience-badge .number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.experience-badge .text {
+    font-size: 0.9rem;
+}
+
+.about-content h3 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.feature-item {
+    text-align: center;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    background: var(--gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-box i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.feature-item h4 {
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.feature-item p {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+@media (max-width: 991px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .experience-badge {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+    </style>
+</head>
+
+<body class="toggle-sidebar" ng-controller="DataController">
+    <!-- Main Content -->
+    <main id="main" class="main">
+      <section id="intro">
+          <div class="container">
+              <h1 class="pagetitle">Welcome to College Connect!</h1>
+              <h2>Your Ultimate Platform for College Collaboration</h2>
+              <p>College Connect is your one-stop platform for connecting with students, faculty, and alumni. Whether you're looking to join study groups, collaborate on projects, or participate in college events, we make it easy to stay connected with your peers.</p>
+              <div class="mt-4">
+                  <a href="/signup" class="cta-button btn btn-light me-3">
+                      <i class="bi bi-person-plus me-2"></i>Sign Up Now
+                  </a>
+                  <a href="/login" class="cta-button btn btn-outline-light">
+                      <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                  </a>
+              </div>
+          </div>
+      </section>
+  
+      <section class="keyfeatures">
+        <div class="container">
+          <div class="section-title text-center mb-5">
+              <h2>Key Features</h2>
+              <div class="title-line"></div><br>
+          <div class="row justify-content-center g-4">
+              <div class="col-lg-4 col-md-6">
+                  <div class="card text-center">
+                      <div class="card-body">
+                          <i class="bi bi-person-plus-fill"></i>
+                          <h5 class="card-title">Follow & Connect</h5>
+                          <p>Follow your peers, faculty members, and stay updated with their academic journey and achievements.</p>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-4 col-md-6">
+                  <div class="card text-center">
+                      <div class="card-body">
+                          <i class="bi bi-bar-chart-line"></i>
+                          <h5 class="card-title">Interactive Polls</h5>
+                          <p>Create and participate in polls to gather opinions, make decisions, and engage with the community.</p>
+                      </div>
+                  </div>
+              </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event"></i>
+                            <h5 class="card-title">College Events</h5>
+                            <p>Stay updated with college events and participate in various activities.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-chat-dots"></i>
+                            <h5 class="card-title">Real-time Chat</h5>
+                            <p>Instant messaging with peers, faculty, and study groups for quick communication.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-share"></i>
+                            <h5 class="card-title">Share Posts</h5>
+                            <p>Share your thoughts, achievements, and academic content with your college community.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="bi bi-chat-left-text"></i>
+                            <h5 class="card-title">Interactive Comments</h5>
+                            <p>Engage in discussions through comments on posts and shared content.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  
+      <section class="signup-section">
+          <div class="container">
+              <h2>Join Our Growing Community</h2>
+              <p class="mb-4">Connect with thousands of students, share resources, and enhance your college experience!</p>
+              <div class="counter-row row justify-content-center text-center mb-5">
+                  <div class="col-md-4">
+                      <div class="counter">
+                          <i class="bi bi-people-fill mb-3" style="font-size: 2.5rem;"></i>
+                          <h3>1000+</h3>
+                          <p>Active Users</p>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="counter">
+                          <i class="bi bi-mortarboard-fill mb-3" style="font-size: 2.5rem;"></i>
+                          <h3>50+</h3>
+                          <p>Departments</p>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="counter">
+                          <i class="bi bi-graph-up mb-3" style="font-size: 2.5rem;"></i>
+                          <h3>95%</h3>
+                          <p>Success Rate</p>
+                      </div>
+                  </div>
+              </div>
+              <a href="/signup" class="btn btn-light btn-lg">Get Started Now</a>
+          </div>
+      </section>
+  
+      <section id="about-us">
+        <div class="container">
+            <div class="section-title text-center mb-5">
+                <h2>About Us</h2>
+                <div class="title-line"></div>
+            </div>
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-6">
+                    <div class="about-image">
+                        <img src="/assets/img/about-us.png" alt="About Us" class="img-fluid main-img">
+                        <div class="experience-badge">
+                            <span class="number">5+</span>
+                            <span class="text">Years of Excellence</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-content">
+                        <h3 class="mb-4">Connecting Students for a Better Future</h3>
+                        <p class="lead mb-4">College Connect was founded with a vision to revolutionize how students interact and collaborate within their academic community.</p>
+                        <div class="features-grid">
+                            <div class="feature-item">
+                                <div class="icon-box">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <h4>Student Network</h4>
+                                <p>Build meaningful connections with peers and faculty</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="icon-box">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                                <h4>Resource Sharing</h4>
+                                <p>Access and share valuable academic materials</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="icon-box">
+                                    <i class="bi bi-calendar-check"></i>
+                                </div>
+                                <h4>Event Planning</h4>
+                                <p>Organize and participate in college events</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="icon-box">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <h4>Growth Together</h4>
+                                <p>Learn and develop with your community</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  
+      <section id="contact">
+          <div class="container">
+              <h2 style="color: var(--primary-color);">Contact Us</h2>
+              <div class="row justify-content-center">
+                  <div class="col-md-8">
+                      <div class="contact-info">
+                          <div class="mb-3">
+                              <i class="bi bi-envelope-fill me-2"></i>
+                              <a href="mailto:info@collegeconnect.com" class="text-decoration-none">info@collegeconnect.com</a>
+                          </div>
+                          <div class="mb-3">
+                              <i class="bi bi-telephone-fill me-2"></i>
+                              <a href="tel:+917738571105" class="text-decoration-none">+91 7738571105</a>
+                          </div>
+                          <div>
+                              <i class="bi bi-geo-alt-fill me-2"></i>
+                              <span>Mumbai, Maharashtra, India</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+  </main>
+  
+  <footer id="footer" class="footer">
+      <div class="container">
+          <div class="copyright">
+              © <script>document.write(new Date().getFullYear())</script> <strong><span>College Connect</span></strong>. All Rights Reserved
+          </div>
+          <div class="social-links mt-3">
+              <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+              <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+      </div>
+  </footer>
+
+<script>
+    // Enhanced Intersection Observer for counters
+    const counters = document.querySelectorAll('.counter');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                
+                // Animate the numbers
+                const h3 = entry.target.querySelector('h3');
+                const finalNumber = parseInt(h3.innerText);
+                let currentNumber = 0;
+                const duration = 2000; // 2 seconds
+                const increment = finalNumber / (duration / 16); // 60fps
+
+                const animateNumber = () => {
+                    currentNumber += increment;
+                    if (currentNumber < finalNumber) {
+                        h3.innerText = Math.round(currentNumber) + '+';
+                        requestAnimationFrame(animateNumber);
+                    } else {
+                        h3.innerText = finalNumber + '+';
+                    }
+                };
+
+                requestAnimationFrame(animateNumber);
+            }
+        });
+    }, { 
+        threshold: 0.5,
+        rootMargin: '0px'
+    });
+
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
+</script>
+</body>
+</html>
