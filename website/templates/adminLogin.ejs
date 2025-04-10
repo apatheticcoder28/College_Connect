@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Admin Login</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="/assets/img/logo.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Nunito:300,400,600,700|Poppins:300,400,500,600,700" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <!-- Add this style section after your existing CSS links -->
+  <style>
+    :root {
+      --primary-color: #012970;
+      --secondary-color: #4154f1;
+      --gradient: linear-gradient(135deg, #012970 0%, #4154f1 100%);
+    }
+  
+    body {
+      background: #f6f9ff;
+      font-family: 'Poppins', sans-serif;
+    }
+  
+    .section.register {
+      background: url('/assets/img/bg-pattern.png') center/cover no-repeat fixed;
+    }
+  
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(1, 41, 112, 0.1);
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.95);
+      animation: fadeIn 0.5s ease;
+    }
+  
+    .card-title {
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 1.8rem !important;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  
+    .form-control {
+      border-radius: 10px;
+      padding: 0.8rem 1.2rem;
+      border: 1px solid #e4e6ef;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.9);
+    }
+  
+    .form-control:focus {
+      box-shadow: 0 0 0 3px rgba(65, 84, 241, 0.15);
+      border-color: var(--secondary-color);
+    }
+  
+    .btn-primary {
+      background: var(--gradient);
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: 100%;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(1, 41, 112, 0.2);
+    }
+  
+    .logo img {
+      transition: transform 0.3s ease;
+    }
+  
+    .logo img:hover {
+      transform: scale(1.05);
+    }
+  
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  
+    .form-label {
+      color: #566a7f;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+  
+    .admin-badge {
+      background: var(--gradient);
+      color: white;
+      padding: 0.3rem 1rem;
+      border-radius: 25px;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+  
+    .alert {
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+  <style>
+    .flash-messages {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      width: 100%;
+      max-width: 500px;
+    }
+  
+    .alert {
+      margin-bottom: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      animation: slideIn 0.5s ease-out;
+    }
+  
+    @keyframes slideIn {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  
+    .form-control.is-invalid {
+      border-color: #dc3545;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+  
+    .form-control.is-valid {
+      border-color: #198754;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+  
+    .invalid-feedback {
+      display: none;
+      color: #dc3545;
+      font-size: 0.875em;
+      margin-top: 0.25rem;
+    }
+  
+    .was-validated .form-control:invalid ~ .invalid-feedback,
+    .form-control.is-invalid ~ .invalid-feedback {
+      display: block;
+    }
+  </style>
+  
+  <!-- Replace the form validation script -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('.needs-validation');
+      const emailInput = document.getElementById('adminEmail');
+      const passwordInput = document.getElementById('adminPassword');
+  
+      // Real-time validation
+      emailInput.addEventListener('input', validateEmail);
+      passwordInput.addEventListener('input', validatePassword);
+  
+      function validateEmail() {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          const isValid = emailRegex.test(emailInput.value);
+          updateValidation(emailInput, isValid, 'Please enter a valid email address');
+          return isValid;
+      }
+  
+      function validatePassword() {
+          const isValid = passwordInput.value.length >= 10;  // Changed from 8 to 10
+          updateValidation(passwordInput, isValid, 'Password must be at least 10 characters long');
+          return isValid;
+      }
+  
+      function updateValidation(element, isValid, message) {
+          if (isValid) {
+              element.classList.remove('is-invalid');
+              element.classList.add('is-valid');
+          } else {
+              element.classList.remove('is-valid');
+              element.classList.add('is-invalid');
+              element.nextElementSibling.textContent = message;
+          }
+      }
+  
+      form.addEventListener('submit', function(event) {
+          event.preventDefault();
+          const isEmailValid = validateEmail();
+          const isPasswordValid = validatePassword();
+  
+          if (isEmailValid && isPasswordValid) {
+              form.submit();
+          }
+      });
+  
+      // Auto-hide flash messages
+      const flashMessages = document.querySelectorAll('.alert');
+      flashMessages.forEach(message => {
+          setTimeout(() => {
+              message.classList.remove('show');
+              setTimeout(() => message.remove(), 500);
+          }, 5000);
+      });
+  });
+  </script>
+  <main>
+    <div class="container">
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="/" class="logo d-flex align-items-center w-auto">
+                  <img src="assets/img/logo.png" alt="" style="height: 85px;">
+                  <span class="d-none d-lg-block"></span>
+                </a>
+              </div>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Admin Login</h5>
+                    <p class="text-center small">Enter your admin email & password</p>
+                  </div>
+
+                  <form class="row g-3 needs-validation" action="/admin/login" method="POST" novalidate>
+                    <div class="col-12">
+                      <label for="adminEmail" class="form-label">Admin Email</label>
+                      <input type="email" name="email" class="form-control" id="adminEmail" required>
+                      <div class="invalid-feedback">Please enter your admin email!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <label for="adminPassword" class="form-label">Password</label>
+                      <input type="password" name="password" class="form-control" id="adminPassword" minlength="8" required>
+                      <div class="invalid-feedback">Please enter your password!</div>
+                    </div>
+
+                    <div class="col-12">
+                      <button class="btn btn-primary w-100" type="submit">Login</button>
+                    </div>
+                  </form>
+                  <div class="text-center mt-4">
+                    <a href="/login" class="btn btn-outline-primary">
+                      <i class="bi bi-person"></i> User Login
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('.needs-validation');
+        const emailInput = document.getElementById('adminEmail');
+        const passwordInput = document.getElementById('adminPassword');
+
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(emailInput.value)) {
+                    emailInput.classList.add('is-invalid');
+                    emailInput.nextElementSibling.textContent = 'Please enter a valid email address';
+                    isValid = false;
+                } else {
+                    emailInput.classList.remove('is-invalid');
+                    emailInput.classList.add('is-valid');
+                }
+
+                // Password validation
+                if (passwordInput.value.length < 10) {  // Changed from 8 to 10
+                    passwordInput.classList.add('is-invalid');
+                    passwordInput.nextElementSibling.textContent = 'Password must be at least 10 characters long';
+                    isValid = false;
+                } else {
+                    passwordInput.classList.remove('is-invalid');
+                    passwordInput.classList.add('is-valid');
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        }
+    });
+  </script>
+</body>
+</html>

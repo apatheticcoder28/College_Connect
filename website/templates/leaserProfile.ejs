@@ -1,0 +1,1612 @@
+<html lang="en" ng-app="myApp"><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Profile Page</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="/assets/img/logo.png" rel="icon">
+  <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="/assets/css/style.css" rel="stylesheet">
+
+  <!-- AngularJS and JS file for rendering data -->  
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="profilePage.js"></script>
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Jan 09 2024 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+<style type="text/css" id="operaUserStyle"></style><style type="text/css"></style></head>
+
+<body class="toggle-sidebar" ng-controller="DataController">
+  <script>
+    function deletePost(PID) {
+  fetch(`/post/${PID}`, {
+    method: 'DELETE'
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Post deleted successfully');
+      location.reload('/profile');
+    } else {
+      console.error('Failed to delete post');
+    }
+  })
+  .catch(error => {
+    console.error('Error deleting post:', error);
+  });
+};
+
+function approval(id) {
+    var aprv = new XMLHttpRequest();
+    aprv.open("GET", "/api/rent-approval/" + id);
+    aprv.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    aprv.onreadystatechange = function() {
+        if (aprv.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(aprv.responseText);
+            alert(res.Msg);
+        }        
+    };
+    aprv.send();
+}
+
+function denial(id) {
+    var deny = new XMLHttpRequest();
+    deny.open("GET", "/api/rent-denial/" + id);
+    deny.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    deny.onreadystatechange = function() {
+        if (deny.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(deny.responseText);
+            alert(res.Msg);
+        }
+    };
+    deny.send();
+}
+
+function dismiss(id){
+  var dismis = new XMLHttpRequest();
+  dismis.open("GET", "/api/dismiss/" + id);
+  dismis.onreadystatechange = function(){
+    if (dismis.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(dismis.responseText);
+      alert(res.Msg);
+    }
+  };
+  dismis.send();
+}
+
+
+function getNotifications(callback){
+  var notif = new XMLHttpRequest();
+  notif.open("GET", "/api/get-notifications");
+  notif.onreadystatechange = function(){
+    if (notif.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(notif.responseText);
+      let notifi=[];
+      for(let i=0; i<res.Notifications.length; i++){
+        let newobj={
+          'Title' : res.Notifications[i].Title,
+          'Description' : res.Notifications[i].Description,
+          'PID' : res.Notifications[i].Post,
+          'ApprovalNeeded' : res.Notifications[i].ApprovalNeeded,
+          'RenterID' : res.Notifications[i].Users.Renter,
+          'LeaserID' :res.Notifications[i].Users.Leaser,
+          'ID' : res.Notifications[i]._id
+        }
+        notifi.push(newobj);
+      }
+      callback(notifi);
+    }
+  };
+  notif.send();
+}
+
+
+function displayNotifications() {
+  let notif = getNotifications(function(notifi) {
+
+  var badgeNumber = document.getElementById("badge-number");
+    var dropdownHeader = document.getElementById("dropdown-header");
+    var notificationDiv = document.getElementById("notification");
+
+    badgeNumber.textContent = notifi.length;
+
+    dropdownHeader.textContent = "You have " + notifi.length + " new notification(s)";
+    notificationDiv.innerHTML = "";
+
+    notifi.forEach(function(notification) {
+      var hr = document.createElement("hr");
+      
+      var listItem = document.createElement("li");
+      listItem.className = "message-item";
+      listItem.id = "message-item";
+      listItem.style.paddingBottom = 0;
+      
+      var div = document.createElement("div");
+      
+      if (notification.ApprovalNeeded === true) {
+        var titleLink = document.createElement("a");
+        titleLink.href = "/post/" + notification.PID;
+        var title = document.createElement("h4");
+        title.textContent = notification.Title;
+        title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+
+            var descLink = document.createElement("a");
+            descLink.href = "/profileview/" + notification.RenterID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+
+            var approvalDiv = document.createElement("div");
+            approvalDiv.className = "row";
+            approvalDiv.id = "approval";
+            approvalDiv.style.marginLeft = "2rem";
+
+            var approveButton = document.createElement("button");
+            approveButton.className = "col-1 btn btn-success";
+            approveButton.textContent = "Approve";
+            approveButton.style.width = "7rem";
+            approveButton.style.height = "2rem";
+            approveButton.style.textAlign = "center";
+            approveButton.style.marginRight = "1rem";
+            approveButton.onclick = function() {
+              approval(notification.ID);
+              location.reload();
+            };
+            
+            var denyButton = document.createElement("button");
+            denyButton.className = "col-1 btn btn-danger";
+            denyButton.textContent = "Deny";
+            denyButton.style.width = "7rem";
+            denyButton.style.height = "2rem";
+            denyButton.style.textAlign = "center";
+            denyButton.onclick = function() {
+              denial(notification.ID);
+              location.reload();
+            };
+            
+            approvalDiv.appendChild(approveButton);
+            approvalDiv.appendChild(denyButton);
+            div.appendChild(approvalDiv);
+          } else if (notification.ApprovalNeeded === false) {
+            var titleLink = document.createElement("a");
+            titleLink.href = "/profileview/" + notification.LeaserID;
+            var title = document.createElement("h4");
+            title.textContent = notification.Title;
+            title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+            
+            var descLink = document.createElement("a");
+            descLink.href = "/post/" + notification.PID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+            
+            var dismissDiv = document.createElement("div");
+            dismissDiv.className = "row";
+            dismissDiv.id = "Dismiss";
+            dismissDiv.style.marginLeft = "2rem";
+            
+            var NID=notification.ID;
+            var dismissButton = document.createElement("button");
+            dismissButton.className = "col-1 btn btn-danger";
+            dismissButton.textContent = "Dismiss X";
+            dismissButton.style.width = "7rem";
+            dismissButton.style.height = "2rem";
+            dismissButton.style.textAlign = "center";
+            dismissButton.style.marginLeft = "5rem";
+            dismissButton.onclick = async function() {
+              await dismiss(NID);
+            };
+
+            dismissDiv.appendChild(dismissButton);
+            div.appendChild(dismissDiv);
+        }
+
+        listItem.appendChild(hr);
+        listItem.appendChild(div);
+
+        notificationDiv.appendChild(listItem);
+        
+      });
+    });
+
+}
+displayNotifications();
+
+  </script>
+
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/home" class="logo d-flex align-items-center" style="width: 150px;height: 10px;">
+        <img src="/assets/img/logo.png" alt="logo" style="height: 60px;">
+      </a>
+      
+    </div><!-- End Logo -->
+
+    <div class="input-group search-bar" style="width: 30rem;">
+      <form class="search-form d-flex align-items-center" method="POST" action="/search">
+        <input type="text" class="form-control" name="pincode" placeholder="Pincode" title="Enter search Pincode" style="width: 10rem;" oninput="validateInput(this)" minlength="6" maxlength="6" required> 
+        <input type="text" class="form-control" pattern="^[^\s\d].*$" name="model" placeholder="Search" title="Enter search Model">
+        <div class="input-group-append">
+          <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </div>  
+      </form>
+    </div><!-- End Search Bar -->
+  
+    <script>
+      function validateInput(input) {
+          input.value = input.value.replace(/[^0-9]/g, '');
+      }
+      </script>
+  
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+      <!-- Create Post Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/create-post" title="Create Post">
+          <i class="bi bi-plus-circle"></i>
+          <small>Post</small>
+        </a>
+      </li>
+  
+      <!-- Create Poll Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/createPoll" title="Create Poll">
+          <i class="bi bi-clipboard-data"></i>
+          <small>Poll</small>
+        </a>
+      </li>
+  
+      <!-- Chat Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/chat" title="Chat">
+          <i class="bi bi-chat-dots"></i>
+          <small>Chat</small>
+        </a>
+      </li>
+  
+      <!-- Events Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/user/events" title="Events">
+          <i class="bi bi-calendar-event"></i>
+          <small>Events</small>
+        </a>
+      </li>
+  
+        <li class="nav-item dropdown">
+          <button class="nav-link nav-icon" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="badge-number">0</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header" id="dropdown-header">No Notifications</li>
+            <!-- Change this line -->
+            <div id="notification-list" class="notification-scroll"></div>
+            <li class="dropdown-footer">
+                <button class="btn btn-danger btn-sm clear-all">Clear All Notifications</button>
+            </li>
+        </ul>
+        </li>
+        <li class="nav-item dropdown pe-3">
+          <a
+            class="nav-link nav-profile d-flex align-items-center pe-0"
+            href="#"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src="/assets/img/<%= user.ProfileImg %>"
+              alt="Profile"
+              class="rounded-circle"
+              style="width: 40px; height: 40px;"
+            />
+            <span class="d-none d-md-block dropdown-toggle ps-2">
+              <%= user.Username %>
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/profile">
+                <i class="bi bi-person"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/settings">
+                <i class="bi bi-gear"></i> Settings
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <style>
+  
+  .notification-item[data-notification-type="post-delete"],
+  .notification-item[data-notification-type="poll-delete"] {
+      background-color: #fff3f3;
+      border-left: 3px solid #dc3545;
+  }
+  
+  .notification-item[data-notification-type="post-delete"]:hover,
+  .notification-item[data-notification-type="poll-delete"]:hover {
+      background-color: #ffe9e9;
+  }
+  
+          .notification-username {
+      font-weight: 600;
+      color: #012970;
+      margin-right: 5px;
+  }
+  
+  .notification-item[data-notification-type="comment"] {
+      background-color: #f8f9fa;
+      border-left: 3px solid #4154f1;
+  }
+  
+  .notification-item[data-notification-type="comment"]:hover {
+      background-color: #e9ecef;
+  }
+  
+        .notifications {
+          min-width: 300px;
+          max-width: 350px;
+          padding: 10px;
+          box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
+        }
+        
+        .notification-scroll {
+          max-height: 400px;
+          overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: #4154f1 #f6f9ff;
+        }
+        
+        .notification-scroll::-webkit-scrollbar {
+          width: 5px;
+        }
+        
+        .notification-scroll::-webkit-scrollbar-track {
+          background: #f6f9ff;
+        }
+        
+        .notification-scroll::-webkit-scrollbar-thumb {
+          background-color: #4154f1;
+          border-radius: 20px;
+        }
+        
+        .notification-item {
+          display: flex;
+          align-items: flex-start;
+          padding: 15px;
+          border-bottom: 1px solid #f6f9ff;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          position: relative;
+        }
+        
+        .notification-item:hover {
+          background: #f6f9ff;
+        }
+        
+        .notification-item .delete-notification {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          padding: 3px 6px;
+          font-size: 12px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        
+        .notification-item:hover .delete-notification {
+          opacity: 1;
+        }
+        
+        .notification-content {
+          flex: 1;
+          margin-left: 15px;
+        }
+        
+        .notification-title {
+          font-size: 14px;
+          font-weight: 600;
+          margin-bottom: 5px;
+          color: #012970;
+        }
+        
+        .notification-message {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 5px;
+        }
+        
+        .notification-time {
+          font-size: 11px;
+          color: #919191;
+        }
+        
+        .dropdown-header {
+          text-align: center;
+          padding: 10px;
+          font-size: 15px;
+          font-weight: 600;
+          color: #012970;
+        }
+        
+        .dropdown-footer {
+          text-align: center;
+          padding: 10px;
+          border-top: 1px solid #f6f9ff;
+        }
+        
+        .clear-all {
+          width: 100%;
+          background: #dc3545;
+          border: none;
+          color: white;
+          padding: 8px;
+          border-radius: 4px;
+          transition: all 0.3s ease;
+        }
+        
+        .clear-all:hover {
+          background: #bb2d3b;
+        }
+  
+        .notification-item[data-notification-type="poll-join"] {
+          background-color: #f8f9fa;
+          border-left: 3px solid #28a745;
+        }
+  
+        .notification-item[data-notification-type="poll-leave"] {
+          background-color: #f8f9fa;
+          border-left: 3px solid #dc3545;
+        }
+  
+        .notification-message.leave {
+            color: #dc3545;
+        }
+  
+        </style>
+        <script>
+          function getNotifications(callback) {
+    fetch('/api/get-notifications')
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        callback(data.Notifications || []);
+      })
+      .catch(error => {
+        console.error('Error fetching notifications:', error);
+        callback([]);
+      });
+  }
+  // Function to display notifications in the UI
+  function displayNotifications() {
+      getNotifications(function (notifications) {
+          const notificationDiv = document.getElementById("notification-list");
+          if (!notificationDiv) return;
+  
+          notificationDiv.innerHTML = ""; // Clear existing notifications
+  
+          notifications.forEach(function (notification) {
+              const listItem = document.createElement("div");
+              listItem.className = "notification-item";
+              listItem.setAttribute("data-notification-id", notification._id);
+  
+              const timeAgo = timeSince(new Date(notification.timestamp));
+  
+              let notificationHTML = "";
+  
+              // Handle 'post-delete' and 'poll-delete'
+              if (notification.type === "post-delete" || notification.type === "poll-delete") {
+                  listItem.setAttribute("data-notification-type", notification.type);
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || "default-admin.jpg"}"
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message">
+                              <span class="notification-username">Admin</span>
+                              ${notification.message}
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-sm btn-danger delete-notification">
+                          <i class="bi bi-x"></i>
+                      </button>
+                  `;
+              } 
+              // Handle 'poll-join' and 'poll-leave'
+              else if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                  const senderName = notification.sender?.Username || 
+                      (notification.sender?.FirstName && notification.sender?.LastName
+                          ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                          : "Unknown User");
+  
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || "default.jpg"}"
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message ${notification.type === 'poll-leave' ? 'leave' : ''}">
+                              <span class="notification-username">${senderName}</span>
+                              ${notification.type === 'poll-join' ? 'has joined your poll' : 'has left your poll'}
+                              <br>
+                              <small class="text-muted">Poll: ${notification.pollTitle || 'Untitled Poll'}</small>
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-danger btn-sm delete-notification" 
+                              onclick="deleteNotification('${notification._id}', event)"
+                              style="padding: 2px 5px; font-size: 0.7rem;">
+                          <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                      </button>
+                  `;
+              } 
+              // Handle other notification types
+              else {
+                  const senderName = notification.sender?.FirstName && notification.sender?.LastName
+                      ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                      : "Unknown User";
+  
+                  const messageWithoutName = notification.message.replace(
+                      `${senderName}`, ""
+                  ).trim();
+  
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || 'default.jpg'}" 
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message">
+                              <span class="notification-username">${senderName}</span>
+                              ${messageWithoutName}
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-danger btn-sm delete-notification" 
+                              onclick="deleteNotification('${notification._id}', event)"
+                              style="padding: 2px 5px; font-size: 0.7rem;">
+                          <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                      </button>
+                  `;
+              }
+  
+              // Set HTML and add event listeners
+              listItem.innerHTML = notificationHTML;
+              listItem.addEventListener("click", (e) => {
+                  if (!e.target.closest(".delete-notification")) {
+                      if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                          window.location.href = `/poll/${notification.pollId}`;
+                      } else {
+                          handleNotificationClick(notification._id);
+                      }
+                  }
+              });
+  
+              listItem.style.cursor = "default";
+              notificationDiv.appendChild(listItem);
+          });
+  
+          // Update badge and header
+          const badgeNumber = document.getElementById("badge-number");
+          const dropdownHeader = document.getElementById("dropdown-header");
+  
+          if (badgeNumber) badgeNumber.textContent = notifications.length;
+          if (dropdownHeader) {
+              dropdownHeader.textContent =
+                  notifications.length > 0
+                      ? `You have ${notifications.length} notification(s)`
+                      : "No Notifications";
+          }
+      });
+  }
+  
+  
+  function timeSince(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+  
+      if (seconds < 60) {
+          return `${seconds} seconds ago`;
+      }
+  
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) {
+          return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      }
+  
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) {
+          return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      }
+  
+      const days = Math.floor(hours / 24);
+      if (days < 30) {
+          return `${days} day${days > 1 ? 's' : ''} ago`;
+      }
+  
+      const months = Math.floor(days / 30);
+      if (months < 12) {
+          return `${months} month${months > 1 ? 's' : ''} ago`;
+      }
+  
+      const years = Math.floor(months / 12);
+      return `${years} year${years > 1 ? 's' : ''} ago`;
+  }
+  
+  async function deleteNotification(notificationId, event) {
+    event.stopPropagation();
+    try {
+      await fetch(`/api/delete-notification/${notificationId}`, { method: 'DELETE' });
+      displayNotifications();
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  }
+  
+  document.querySelector('.clear-all')?.addEventListener('click', async () => {
+    try {
+      await fetch('/api/clear-notifications', { method: 'DELETE' });
+      displayNotifications();
+    } catch (error) {
+      console.error('Error clearing notifications:', error);
+    }
+  });
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    displayNotifications();
+    setInterval(displayNotifications, 30000); // Refresh every 30 seconds
+  });
+        </script>
+        
+        
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            // Initialize all dropdowns
+            var dropdownElementList = [].slice.call(
+              document.querySelectorAll('[data-bs-toggle="dropdown"]')
+            );
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+              return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+          });
+          </script>
+    </nav><!-- End Icons Navigation -->
+    <script>
+      async function handleNotificationClick(notificationId) {
+        try {
+          // Mark notification as read
+          await fetch(`/api/mark-notification-read/${notificationId}`, {
+            method: 'POST'
+          });
+    
+          // Get redirect URL
+          const response = await fetch(`/api/notification-redirect/${notificationId}`);
+          const data = await response.json();
+          
+          if (data.success && data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          }
+        } catch (error) {
+          console.error('Error handling notification click:', error);
+        }
+      }
+    
+      // Update your notification item click handler
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const notificationId = this.dataset.notificationId;
+          handleNotificationClick(notificationId);
+        });
+      });
+    </script>
+  </header>
+
+  </header><!-- End Header -->
+
+  <main id="main" class="main">
+    <div class="container">
+        <!-- Profile Header Section -->
+        <div class="profile-header">
+            <div class="profile-image">
+                <img src="/assets/img/<%= user.ProfileImg %>" alt="Profile">
+            </div>
+            <div class="profile-info">
+                <h2 class="profile-name"><%= user.Username %></h2>
+                <p class="profile-details">
+                    <span><i class="bi bi-mortarboard"></i> <%= user.Department %></span>
+                    <span><i class="bi bi-calendar3"></i> Year <%= user.Year %></span>
+                </p>
+                <div class="profile-stats">
+                    <div class="stat-item" data-bs-toggle="modal" data-bs-target="#followersModal">
+                        <div class="stat-count"><%= user.followersCount || 0 %></div>
+                        <div class="stat-label">Followers</div>
+                    </div>
+                    <div class="stat-item" data-bs-toggle="modal" data-bs-target="#followingModal">
+                        <div class="stat-count"><%= user.followingCount || 0 %></div>
+                        <div class="stat-label">Following</div>
+                    </div>
+                </div>
+                <!-- Follow/Unfollow Button -->
+                <div class="follow-btn-container mt-3">
+                  <button class="btn btn-primary follow-btn" 
+                          data-user-id="<%= user.UID %>"
+                          onclick="toggleFollow(this)">
+                      Follow
+                  </button>
+              </div>              
+            </div>
+        </div>
+
+        <!-- Posts Section -->
+         <!-- Content Tabs -->
+<div class="content-tabs">
+  <div class="container">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#posts">
+          <i class="bi bi-grid-3x3"></i> POSTS
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#polls">
+          <i class="bi bi-calendar-event"></i> POLLS
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <!-- Posts Grid -->
+      <div id="posts" class="tab-pane active">
+        <div class="row g-3">
+          <% if (post && post.filter(p => !p.Task).length > 0) { %>
+            <% post.filter(p => !p.Task).forEach(post => { %>
+              <div class="col-lg-4 col-md-6">
+                <div class="post-card">
+                  <a href="/post/<%= post._id %>" class="post-link">
+                    <div class="post-image">
+                      <img src="/assets/img/<%= post.Image %>" alt="Post">
+                      <div class="post-overlay">
+                        <div class="overlay-stats">
+                          <span><i class="bi bi-chat-fill"></i> <%= post.comments?.length || 0 %></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="post-info">
+                      <h5 class="post-title"><%= post.Title %></h5>
+                      <div class="post-meta">
+                        <span><i class="bi bi-geo-alt"></i> <%= post.Location || 'No location' %></span>
+                        <span><i class="bi bi-calendar"></i> <%= new Date(post.createdAt).toLocaleDateString() %></span>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-camera"></i>
+                <h4>No Posts Yet</h4>
+                <p>This user hasn't shared any posts yet</p>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Polls Grid -->
+      <div id="polls" class="tab-pane fade">
+        <div class="row g-3">
+          <% if (post && post.filter(p => p.Task).length > 0) { %>
+            <% post.filter(p => p.Task).forEach(poll => { %>
+              <div class="col-lg-4 col-md-6">
+                <div class="poll-card">
+                  <% if (poll.Image) { %>
+                    <div class="poll-image-container mb-4">
+                      <img src="/assets/img/<%= poll.Image %>" 
+                           alt="Poll Image" 
+                           class="poll-image img-fluid rounded"
+                           style="width: 100%; height: 300px; object-fit: cover;">
+                      <div class="poll-image-overlay">
+                        <span class="poll-status-badge <%= new Date(poll.Deadline) > new Date() ? 'active' : 'expired' %>">
+                          <%= new Date(poll.Deadline) > new Date() ? 'Active' : 'Expired' %>
+                        </span>
+                      </div>
+                    </div>
+                  <% } %>
+                  
+                  <div class="poll-header">
+                    <h4 class="poll-title mb-3"><%= poll.Task %></h4>
+                    <div class="poll-meta-tags mb-3">
+                      <span class="meta-tag">
+                        <i class="bi bi-calendar-event"></i>
+                        <%= new Date(poll.Date).toLocaleDateString('en-US', { 
+                          weekday: 'short', 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        }) %>
+                      </span>
+                      <span class="meta-tag">
+                        <i class="bi bi-clock"></i>
+                        <%= poll.Time %>
+                      </span>
+                      <span class="meta-tag">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <%= poll.Location %>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div class="poll-body">
+                    <!-- Poll Description -->
+                    <div class="description-box mb-4">
+                        <p class="description"><%= poll.Description %></p>
+                    </div>
+                
+                    <% if (new Date(poll.Deadline) > new Date()) { %>
+                        <% 
+                            const currentParticipants = poll.participants ? poll.participants.length : 0;
+                            const isFull = currentParticipants >= poll.MaxParticipants;
+                            const isParticipant = poll.participants && poll.participants.some(p => p._id.toString() === curuser._id.toString());
+                        %>
+                
+                        <!-- Participants Progress -->
+                        <div class="participants-progress mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="progress-title">Event Capacity</h6>
+                                <span class="capacity-badge <%= isFull ? 'full' : 'available' %>">
+                                    <%= currentParticipants %>/<%= poll.MaxParticipants %> Spots
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar <%= isFull ? 'bg-success' : 'bg-primary' %>" 
+                                     role="progressbar" 
+                                     style="width: <%= (currentParticipants / poll.MaxParticipants) * 100 %>%;"></div>
+                            </div>
+                        </div>
+                
+                        <!-- Join/Leave Button -->
+                        <% if (!isFull || isParticipant) { %>
+                            <div class="text-center mt-3">
+                                <button class="btn <%= isParticipant ? 'btn-danger' : 'btn-primary' %>"
+                                        onclick="toggleParticipation('<%= poll._id %>', this)"
+                                        <%= isFull && !isParticipant ? 'disabled' : '' %>>
+                                    <%= isParticipant ? 'Leave Event' : 'Join Event' %>
+                                </button>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center mt-3">
+                                <button class="btn btn-secondary" disabled>Event Full</button>
+                            </div>
+                        <% } %>
+                    <% } %>
+                </div>                
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-calendar-plus"></i>
+                <h4>No Polls Yet</h4>
+                <p>This user hasn't created any polls yet</p>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        <style>
+          /* Content Tabs Styles */
+          .content-tabs {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+            padding: 2rem;
+            margin-top: 2rem;
+          }
+          
+          .nav-tabs {
+            border: none;
+            margin-bottom: 2rem;
+            justify-content: center;
+          }
+          
+          .nav-link {
+            color: #8e8e8e;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border: none;
+            position: relative;
+          }
+          
+          .nav-link.active {
+            color: #262626;
+          }
+          
+          .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #262626;
+          }
+          /* Post Card Styles */
+          .post-card {
+              background: #fff;
+              border-radius: 8px;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              overflow: hidden;
+              transition: transform 0.3s ease;
+              margin-bottom: 20px;
+          }
+          .post-card:hover {
+              transform: translateY(-5px);
+          }
+          .post-link {
+              text-decoration: none;
+              color: inherit;
+          }
+          .post-image {
+              position: relative;
+              width: 100%;
+              height: 250px;
+              overflow: hidden;
+          }
+          .post-image img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+          }
+          .post-overlay {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: rgba(0,0,0,0.4);
+              opacity: 0;
+              transition: opacity 0.3s ease;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+          }
+          .post-card:hover .post-overlay {
+              opacity: 1;
+          }
+          .overlay-stats {
+              color: white;
+              display: flex;
+              gap: 20px;
+          }
+          .overlay-stats span {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+          }
+          .post-info {
+              padding: 15px;
+          }
+          .post-title {
+              margin: 0 0 10px;
+              color: #012970;
+              font-size: 1.1rem;
+          }
+          .post-meta {
+              display: flex;
+              justify-content: space-between;
+              color: #6c757d;
+              font-size: 0.9rem;
+          }
+          .post-meta span {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+          }
+          /* Poll Card Styles */
+          .poll-card {
+              background: #fff;
+              border-radius: 12px;
+              box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+              padding: 20px;
+              margin-bottom: 20px;
+          }
+          .poll-image-container {
+              position: relative;
+              border-radius: 8px;
+              overflow: hidden;
+          }
+          .poll-image-overlay {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+          }
+          .poll-status-badge {
+              padding: 5px 15px;
+              border-radius: 20px;
+              font-size: 0.85rem;
+              font-weight: 600;
+          }
+          .poll-status-badge.active {
+              background: #00b74a;
+              color: white;
+          }
+          .poll-status-badge.expired {
+              background: #dc3545;
+              color: white;
+          }
+          .poll-meta-tags {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+          }
+          .meta-tag {
+              display: flex;
+              align-items: center;
+              gap: 5px;
+              padding: 5px 10px;
+              background: #f8f9fa;
+              border-radius: 15px;
+              font-size: 0.9rem;
+              color: #6c757d;
+          }
+          .description-box {
+              background: #f8f9fa;
+              border-radius: 8px;
+              padding: 15px;
+          }
+          .description {
+              margin: 0;
+              color: #4f4f4f;
+              font-size: 0.95rem;
+              line-height: 1.5;
+          }
+          .participants-progress {
+              background: #f8f9fa;
+              padding: 15px;
+              border-radius: 8px;
+          }
+          .capacity-badge {
+              padding: 3px 10px;
+              border-radius: 15px;
+              font-size: 0.85rem;
+              font-weight: 600;
+          }
+          .capacity-badge.available {
+              background: #e3f2fd;
+              color: #0d6efd;
+          }
+          .capacity-badge.full {
+              background: #dc3545;
+              color: white;
+          }
+          .empty-state {
+              text-align: center;
+              padding: 40px 20px;
+              color: #6c757d;
+          }
+          .empty-state i {
+              font-size: 3rem;
+              margin-bottom: 15px;
+              color: #dee2e6;
+          }
+          .empty-state h4 {
+              margin-bottom: 10px;
+              color: #343a40;
+          }
+          </style>
+    </div>
+
+    <!-- Followers Modal -->
+    <div class="modal fade" id="followersModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-scrollable">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">Your Followers</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <% if (followers && followers.length > 0) { %>
+                      <% followers.forEach(follower => { %>
+                          <div class="user-item">
+                              <img src="/assets/img/<%= follower.followerId.ProfileImg %>" alt="User">
+                              <span><%= follower.followerId.FirstName %> <%= follower.followerId.LastName %></span>
+                          </div>
+                      <% }); %>
+                  <% } else { %>
+                      <p>No followers yet</p>
+                  <% } %>
+              </div>
+          </div>
+      </div>
+    </div>
+
+
+    <!-- Following Modal -->
+    <div class="modal fade" id="followingModal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-scrollable">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title">People You Follow</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <% if (following && following.length > 0) { %>
+                      <% following.forEach(follow => { %>
+                          <div class="user-item">
+                              <img src="/assets/img/<%= follow.followedId.ProfileImg %>" alt="User">
+                              <span><%= follow.followedId.FirstName %> <%= follow.followedId.LastName %></span>
+                          </div>
+                      <% }); %>
+                  <% } else { %>
+                      <p>Not following anyone yet</p>
+                  <% } %>
+              </div>
+          </div>
+      </div>
+    </div>
+
+</main>
+
+<style>
+    /* Add your existing styles here */
+    .poll-card {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .poll-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .poll-user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .poll-user-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .poll-image img {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .poll-details {
+        margin: 15px 0;
+        color: #666;
+    }
+
+    .poll-details p {
+        margin: 5px 0;
+    }
+
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .user-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+</style>
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="copyright">
+      © Copyright <strong><span>Renter</span></strong>. All Rights Reserved
+    </div>
+    <div class="credits">
+      <!-- All the links in the footer should remain intact. -->
+      <!-- You can delete the links only if you purchased the pro version. -->
+      <!-- Licensing information: https://bootstrapmade.com/license/ -->
+      <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="/assets/vendor/echarts/echarts.min.js"></script>
+  <script src="/assets/vendor/quill/quill.min.js"></script>
+  <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="/assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+    async function toggleFollow(button) {
+        const userId = button.getAttribute('data-user-id');
+        const isFollowing = button.textContent.trim() === 'Unfollow';
+
+        try {
+            const endpoint = isFollowing ? `/api/unfollow/${userId}` : `/api/follow/${userId}`;
+            const response = await fetch(endpoint, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include' // Important for sending cookies
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Follow toggle response:', result);
+
+            if (result.success) {
+                // Toggle the button state
+                button.textContent = isFollowing ? 'Follow' : 'Unfollow';
+                button.classList.toggle('btn-primary', isFollowing);
+                button.classList.toggle('btn-danger', !isFollowing);
+
+                // Update followers count dynamically
+                const followersCountElem = document.querySelector('.stat-item .stat-count');
+                if (followersCountElem) {
+                    let count = parseInt(followersCountElem.textContent, 10);
+                    followersCountElem.textContent = isFollowing ? count - 1 : count + 1;
+                }
+            } else {
+                alert(result.message || 'Could not update follow status');
+            }
+        } catch (error) {
+            console.error('Error toggling follow:', error);
+            alert('Error updating follow status. Please try again.');
+        }
+    }
+
+    // On page load, check follow status
+    document.addEventListener('DOMContentLoaded', async function () {
+        const followBtn = document.querySelector('.follow-btn');
+        if (!followBtn) {
+            console.warn('Follow button not found on page');
+            return;
+        }
+
+        const userId = followBtn.getAttribute('data-user-id');
+        if (!userId) {
+            console.error('Follow button missing data-user-id attribute');
+            return;
+        }
+
+        console.log('Checking follow status for user:', userId);
+
+        try {
+            const response = await fetch(`/api/follow-status/${userId}`, {
+                credentials: 'include' // Important for sending cookies
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Follow status:', data);
+
+            if (data.isFollowing) {
+                followBtn.textContent = 'Unfollow';
+                followBtn.classList.remove('btn-primary');
+                followBtn.classList.add('btn-danger');
+            }
+        } catch (error) {
+            console.error('Error checking follow status:', error);
+        }
+    });
+</script>
+
+
+<script>
+  async function toggleParticipation(pollId, button) {
+      const isParticipating = button.textContent.trim() === 'Leave Event';
+      const endpoint = isParticipating ? `/api/poll/${pollId}/leave` : `/api/poll/${pollId}/join`;
+  
+      try {
+          const response = await fetch(endpoint, {
+              method: 'POST'
+          });
+          const data = await response.json();
+  
+          if (data.success) {
+              // Update button state
+              button.textContent = isParticipating ? 'Join Event' : 'Leave Event';
+              button.classList.toggle('btn-primary', isParticipating);
+              button.classList.toggle('btn-danger', !isParticipating);
+  
+              // Update participant count and progress bar
+              const countElement = button.closest('.poll-card').querySelector('.capacity-badge');
+              const progressBar = button.closest('.poll-card').querySelector('.progress-bar');
+              
+              if (countElement && progressBar) {
+                  const [current, max] = countElement.textContent.split('/');
+                  const newCount = isParticipating ? parseInt(current) - 1 : parseInt(current) + 1;
+                  countElement.textContent = `${newCount}/${max} Spots`;
+                  
+                  const percentage = (newCount / parseInt(max)) * 100;
+                  progressBar.style.width = `${percentage}%`;
+              }
+          }
+      } catch (error) {
+          console.error('Error toggling participation:', error);
+      }
+  }
+  </script>
+
+<svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg></body></html>
+
+<style>
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 3rem;
+        background: #fff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(1, 41, 112, 0.1);
+        flex-wrap: wrap;
+    }
+    .profile-image {
+        flex: 0 0 150px;
+    }
+    .profile-image img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 4px solid #fff;
+        box-shadow: 0 0 10px rgba(1, 41, 112, 0.1);
+        object-fit: cover;
+    }
+    .profile-info {
+        flex: 1;
+        min-width: 250px;
+    }
+    .profile-name {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+        color: #012970;
+        margin-bottom: 0.5rem;
+    }
+    .profile-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+    .profile-details span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .profile-details i {
+        color: #4154f1;
+    }
+    .profile-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    .stat-item {
+        text-align: center;
+        cursor: pointer;
+        min-width: 80px;
+    }
+    .stat-count {
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
+        font-weight: bold;
+        color: #012970;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    .follow-btn-container {
+        width: 100%;
+        max-width: 200px;
+    }
+    .follow-btn {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-header {
+      background-color: #f6f9ff;
+      border-radius: 15px 15px 0 0;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e9ecef;
+  }
+
+  .modal-title {
+      color: #012970;
+      font-weight: 600;
+      font-size: 1.25rem;
+  }
+
+  .btn-close {
+      background-color: transparent;
+      border: none;
+  }
+
+  .modal-body {
+      padding: 1.5rem;
+  }
+
+  .user-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      background-color: #fff;
+  }
+
+  .user-item:hover {
+      background-color: #f6f9ff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .user-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 0 10px rgba(1, 41, 112, 0.1);
+  }
+
+  .user-item span {
+      font-weight: 500;
+      font-size: 1rem;
+      color: #012970;
+  }
+
+  .modal-body p {
+      text-align: center;
+      color: #6c757d;
+      margin-top: 1rem;
+  }
+
+  /* Scrollable modal content */
+  .modal-dialog-scrollable .modal-body {
+      max-height: 400px;
+      overflow-y: auto;
+  }
+    /* Media Queries */
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem;
+        }
+    .profile-image {
+        margin-bottom: 1.5rem;
+    }
+    .profile-details {
+        justify-content: center;
+    }
+    .profile-stats {
+        justify-content: center;
+    }
+    .follow-btn-container {
+        margin: 0 auto;
+    }
+}
+@media (max-width: 480px) {
+    .profile-header {
+        padding: 1rem;
+    }
+    .profile-image {
+        flex: 0 0 120px;
+    }
+    .profile-image img {
+        width: 120px;
+        height: 120px;
+    }
+    .profile-details {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .profile-details span {
+        justify-content: center;
+    }
+    .stat-item {
+        min-width: 70px;
+    }
+}
+</style>
+</style>
+</style>
+</style>
+

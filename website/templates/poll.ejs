@@ -1,0 +1,949 @@
+<html lang="en"><head></head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+    <title>Polls</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+  
+    <!-- Favicons -->
+    <link href="/assets/img/logo.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+  
+    <!-- =======================================================
+    * Template Name: NiceAdmin
+    * Updated: Jan 09 2024 with Bootstrap v5.3.2
+    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+  <style type="text/css" id="operaUserStyle"></style><style type="text/css"></style> 
+  <script>
+
+    function rentreq(id){
+     var buttonhide = document.getElementById("Rent");
+      var rent = new XMLHttpRequest();
+      rent.open("POST", "/api/rent-request/" + id );
+      rent.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+      rent.onreadystatechange = function(){
+        if(rent.readyState!=4){
+          console.log("loading");
+        }else{
+            
+            var res = JSON.parse(rent.responseText);
+            alert(res.Msg);
+            buttonhide.style.display = "none";
+}}
+      rent.send();
+};
+
+function deletePost(PID) {
+  fetch(`/post/${PID}`, {
+    method: 'DELETE'
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Post deleted successfully');
+      location.reload('/profile');
+    } else {
+      console.error('Failed to delete post');
+    }
+  })
+  .catch(error => {
+    console.error('Error deleting post:', error);
+  });
+};
+
+function approval(id) {
+    var aprv = new XMLHttpRequest();
+    aprv.open("GET", "/api/rent-approval/" + id);
+    aprv.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    aprv.onreadystatechange = function() {
+        if (aprv.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(aprv.responseText);
+            alert(res.Msg);
+        }        
+    };
+    aprv.send();
+}
+
+function denial(id) {
+    var deny = new XMLHttpRequest();
+    deny.open("GET", "/api/rent-denial/" + id);
+    deny.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    deny.onreadystatechange = function() {
+        if (deny.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(deny.responseText);
+            alert(res.Msg);
+        }
+    };
+    deny.send();
+}
+
+function dismiss(id){
+  var dismis = new XMLHttpRequest();
+  dismis.open("GET", "/api/dismiss/" + id);
+  dismis.onreadystatechange = function(){
+    if (dismis.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(dismis.responseText);
+      alert(res.Msg);
+    }
+  };
+  dismis.send();
+}
+
+
+function getNotifications(callback){
+  var notif = new XMLHttpRequest();
+  notif.open("GET", "/api/get-notifications");
+  notif.onreadystatechange = function(){
+    if (notif.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(notif.responseText);
+      let notifi=[];
+      for(let i=0; i<res.Notifications.length; i++){
+        let newobj={
+          'Title' : res.Notifications[i].Title,
+          'Description' : res.Notifications[i].Description,
+          'PID' : res.Notifications[i].Post,
+          'ApprovalNeeded' : res.Notifications[i].ApprovalNeeded,
+          'RenterID' : res.Notifications[i].Users.Renter,
+          'LeaserID' :res.Notifications[i].Users.Leaser,
+          'ID' : res.Notifications[i]._id
+        }
+        notifi.push(newobj);
+      }
+      callback(notifi);
+    }
+  };
+  notif.send();
+}
+
+
+function displayNotifications() {
+  let notif = getNotifications(function(notifi) {
+
+  var badgeNumber = document.getElementById("badge-number");
+    var dropdownHeader = document.getElementById("dropdown-header");
+    var notificationDiv = document.getElementById("notification");
+
+    badgeNumber.textContent = notifi.length;
+
+    dropdownHeader.textContent = "You have " + notifi.length + " new notification(s)";
+    notificationDiv.innerHTML = "";
+
+    notifi.forEach(function(notification) {
+      var hr = document.createElement("hr");
+      
+      var listItem = document.createElement("li");
+      listItem.className = "message-item";
+      listItem.id = "message-item";
+      listItem.style.paddingBottom = 0;
+      
+      var div = document.createElement("div");
+      
+      if (notification.ApprovalNeeded === true) {
+        var titleLink = document.createElement("a");
+        titleLink.href = "/post/" + notification.PID;
+        var title = document.createElement("h4");
+        title.textContent = notification.Title;
+        title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+
+            var descLink = document.createElement("a");
+            descLink.href = "/profileview/" + notification.RenterID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+
+            var approvalDiv = document.createElement("div");
+            approvalDiv.className = "row";
+            approvalDiv.id = "approval";
+            approvalDiv.style.marginLeft = "2rem";
+
+            var approveButton = document.createElement("button");
+            approveButton.className = "col-1 btn btn-success";
+            approveButton.textContent = "Approve";
+            approveButton.style.width = "7rem";
+            approveButton.style.height = "2rem";
+            approveButton.style.textAlign = "center";
+            approveButton.style.marginRight = "1rem";
+            approveButton.onclick = function() {
+              approval(notification.ID);
+              location.reload();
+            };
+            
+            var denyButton = document.createElement("button");
+            denyButton.className = "col-1 btn btn-danger";
+            denyButton.textContent = "Deny";
+            denyButton.style.width = "7rem";
+            denyButton.style.height = "2rem";
+            denyButton.style.textAlign = "center";
+            denyButton.onclick = function() {
+              denial(notification.ID);
+              location.reload();
+            };
+            
+            approvalDiv.appendChild(approveButton);
+            approvalDiv.appendChild(denyButton);
+            div.appendChild(approvalDiv);
+          } else if (notification.ApprovalNeeded === false) {
+            var titleLink = document.createElement("a");
+            titleLink.href = "/profileview/" + notification.LeaserID;
+            var title = document.createElement("h4");
+            title.textContent = notification.Title;
+            title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+            
+            var descLink = document.createElement("a");
+            descLink.href = "/post/" + notification.PID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+            
+            var dismissDiv = document.createElement("div");
+            dismissDiv.className = "row";
+            dismissDiv.id = "Dismiss";
+            dismissDiv.style.marginLeft = "2rem";
+            
+            var NID=notification.ID;
+            var dismissButton = document.createElement("button");
+            dismissButton.className = "col-1 btn btn-danger";
+            dismissButton.textContent = "Dismiss X";
+            dismissButton.style.width = "7rem";
+            dismissButton.style.height = "2rem";
+            dismissButton.style.textAlign = "center";
+            dismissButton.style.marginLeft = "5rem";
+            dismissButton.onclick = async function() {
+              await dismiss(NID);
+            };
+
+            dismissDiv.appendChild(dismissButton);
+            div.appendChild(dismissDiv);
+        }
+
+        listItem.appendChild(hr);
+        listItem.appendChild(div);
+
+        notificationDiv.appendChild(listItem);
+        
+      });
+    });
+
+}
+displayNotifications();
+  </script> 
+</head>
+  
+  <body class="">
+  
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/home" class="logo d-flex align-items-center" style="width: 150px;height: 10px;">
+        <img src="/assets/img/logo.png" alt="logo" style="height: 60px;">
+      </a>
+      
+    </div><!-- End Logo -->
+
+    <div class="input-group search-bar" style="width: 30rem;">
+      <form class="search-form d-flex align-items-center" method="POST" action="/search">
+        <input type="text" class="form-control" name="pincode" placeholder="Pincode" title="Enter search Pincode" style="width: 10rem;" oninput="validateInput(this)" minlength="6" maxlength="6" required> 
+        <input type="text" class="form-control" pattern="^[^\s\d].*$" name="model" placeholder="Search" title="Enter search Model">
+        <div class="input-group-append">
+          <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </div>  
+      </form>
+    </div><!-- End Search Bar -->
+  
+    <script>
+      function validateInput(input) {
+          input.value = input.value.replace(/[^0-9]/g, '');
+      }
+      </script>
+  
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+      <!-- Create Post Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/create-post" title="Create Post">
+          <i class="bi bi-plus-circle"></i>
+          <small>Post</small>
+        </a>
+      </li>
+  
+      <!-- Create Poll Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/createPoll" title="Create Poll">
+          <i class="bi bi-clipboard-data"></i>
+          <small>Poll</small>
+        </a>
+      </li>
+  
+      <!-- Chat Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/chat" title="Chat">
+          <i class="bi bi-chat-dots"></i>
+          <small>Chat</small>
+        </a>
+      </li>
+  
+      <!-- Events Button -->
+      <li class="nav-item">
+        <a class="nav-link" href="/user/events" title="Events">
+          <i class="bi bi-calendar-event"></i>
+          <small>Events</small>
+        </a>
+      </li>
+  
+        <li class="nav-item dropdown">
+          <button class="nav-link nav-icon" data-bs-toggle="dropdown">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="badge-number">0</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
+            <li class="dropdown-header" id="dropdown-header">No Notifications</li>
+            <!-- Change this line -->
+            <div id="notification-list" class="notification-scroll"></div>
+            <li class="dropdown-footer">
+                <button class="btn btn-danger btn-sm clear-all">Clear All Notifications</button>
+            </li>
+        </ul>
+        </li>
+        <li class="nav-item dropdown pe-3">
+          <a
+            class="nav-link nav-profile d-flex align-items-center pe-0"
+            href="#"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <img
+              src="/assets/img/<%= user.ProfileImg %>"
+              alt="Profile"
+              class="rounded-circle"
+              style="width: 40px; height: 40px;"
+            />
+            <span class="d-none d-md-block dropdown-toggle ps-2">
+              <%= user.Username %>
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/profile">
+                <i class="bi bi-person"></i> Profile
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/settings">
+                <i class="bi bi-gear"></i> Settings
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/logout">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </li>
+        
+        <style>
+  
+  .notification-item[data-notification-type="post-delete"],
+  .notification-item[data-notification-type="poll-delete"] {
+      background-color: #fff3f3;
+      border-left: 3px solid #dc3545;
+  }
+  
+  .notification-item[data-notification-type="post-delete"]:hover,
+  .notification-item[data-notification-type="poll-delete"]:hover {
+      background-color: #ffe9e9;
+  }
+  
+          .notification-username {
+      font-weight: 600;
+      color: #012970;
+      margin-right: 5px;
+  }
+  
+  .notification-item[data-notification-type="comment"] {
+      background-color: #f8f9fa;
+      border-left: 3px solid #4154f1;
+  }
+  
+  .notification-item[data-notification-type="comment"]:hover {
+      background-color: #e9ecef;
+  }
+  
+        .notifications {
+          min-width: 300px;
+          max-width: 350px;
+          padding: 10px;
+          box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
+        }
+        
+        .notification-scroll {
+          max-height: 400px;
+          overflow-y: auto;
+          scrollbar-width: thin;
+          scrollbar-color: #4154f1 #f6f9ff;
+        }
+        
+        .notification-scroll::-webkit-scrollbar {
+          width: 5px;
+        }
+        
+        .notification-scroll::-webkit-scrollbar-track {
+          background: #f6f9ff;
+        }
+        
+        .notification-scroll::-webkit-scrollbar-thumb {
+          background-color: #4154f1;
+          border-radius: 20px;
+        }
+        
+        .notification-item {
+          display: flex;
+          align-items: flex-start;
+          padding: 15px;
+          border-bottom: 1px solid #f6f9ff;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          position: relative;
+        }
+        
+        .notification-item:hover {
+          background: #f6f9ff;
+        }
+        
+        .notification-item .delete-notification {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          padding: 3px 6px;
+          font-size: 12px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        
+        .notification-item:hover .delete-notification {
+          opacity: 1;
+        }
+        
+        .notification-content {
+          flex: 1;
+          margin-left: 15px;
+        }
+        
+        .notification-title {
+          font-size: 14px;
+          font-weight: 600;
+          margin-bottom: 5px;
+          color: #012970;
+        }
+        
+        .notification-message {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 5px;
+        }
+        
+        .notification-time {
+          font-size: 11px;
+          color: #919191;
+        }
+        
+        .dropdown-header {
+          text-align: center;
+          padding: 10px;
+          font-size: 15px;
+          font-weight: 600;
+          color: #012970;
+        }
+        
+        .dropdown-footer {
+          text-align: center;
+          padding: 10px;
+          border-top: 1px solid #f6f9ff;
+        }
+        
+        .clear-all {
+          width: 100%;
+          background: #dc3545;
+          border: none;
+          color: white;
+          padding: 8px;
+          border-radius: 4px;
+          transition: all 0.3s ease;
+        }
+        
+        .clear-all:hover {
+          background: #bb2d3b;
+        }
+  
+        .notification-item[data-notification-type="poll-join"] {
+          background-color: #f8f9fa;
+          border-left: 3px solid #28a745;
+        }
+  
+        .notification-item[data-notification-type="poll-leave"] {
+          background-color: #f8f9fa;
+          border-left: 3px solid #dc3545;
+        }
+  
+        .notification-message.leave {
+            color: #dc3545;
+        }
+  
+        </style>
+        <script>
+          function getNotifications(callback) {
+    fetch('/api/get-notifications')
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+      })
+      .then(data => {
+        callback(data.Notifications || []);
+      })
+      .catch(error => {
+        console.error('Error fetching notifications:', error);
+        callback([]);
+      });
+  }
+  // Function to display notifications in the UI
+  function displayNotifications() {
+      getNotifications(function (notifications) {
+          const notificationDiv = document.getElementById("notification-list");
+          if (!notificationDiv) return;
+  
+          notificationDiv.innerHTML = ""; // Clear existing notifications
+  
+          notifications.forEach(function (notification) {
+              const listItem = document.createElement("div");
+              listItem.className = "notification-item";
+              listItem.setAttribute("data-notification-id", notification._id);
+  
+              const timeAgo = timeSince(new Date(notification.timestamp));
+  
+              let notificationHTML = "";
+  
+              // Handle 'post-delete' and 'poll-delete'
+              if (notification.type === "post-delete" || notification.type === "poll-delete") {
+                  listItem.setAttribute("data-notification-type", notification.type);
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || "default-admin.jpg"}"
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message">
+                              <span class="notification-username">Admin</span>
+                              ${notification.message}
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-sm btn-danger delete-notification">
+                          <i class="bi bi-x"></i>
+                      </button>
+                  `;
+              } 
+              // Handle 'poll-join' and 'poll-leave'
+              else if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                  const senderName = notification.sender?.Username || 
+                      (notification.sender?.FirstName && notification.sender?.LastName
+                          ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                          : "Unknown User");
+  
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || "default.jpg"}"
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message ${notification.type === 'poll-leave' ? 'leave' : ''}">
+                              <span class="notification-username">${senderName}</span>
+                              ${notification.type === 'poll-join' ? 'has joined your poll' : 'has left your poll'}
+                              <br>
+                              <small class="text-muted">Poll: ${notification.pollTitle || 'Untitled Poll'}</small>
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-danger btn-sm delete-notification" 
+                              onclick="deleteNotification('${notification._id}', event)"
+                              style="padding: 2px 5px; font-size: 0.7rem;">
+                          <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                      </button>
+                  `;
+              } 
+              // Handle other notification types
+              else {
+                  const senderName = notification.sender?.FirstName && notification.sender?.LastName
+                      ? `${notification.sender.FirstName} ${notification.sender.LastName}`
+                      : "Unknown User";
+  
+                  const messageWithoutName = notification.message.replace(
+                      `${senderName}`, ""
+                  ).trim();
+  
+                  notificationHTML = `
+                      <img src="/assets/img/${notification.sender?.ProfileImg || 'default.jpg'}" 
+                           class="profile-image" alt="Profile" style="width: 40px; height: 40px;">
+                      <div class="notification-content">
+                          <div class="notification-message">
+                              <span class="notification-username">${senderName}</span>
+                              ${messageWithoutName}
+                          </div>
+                          <div class="notification-time">${timeAgo}</div>
+                      </div>
+                      <button class="btn btn-danger btn-sm delete-notification" 
+                              onclick="deleteNotification('${notification._id}', event)"
+                              style="padding: 2px 5px; font-size: 0.7rem;">
+                          <i class="bi bi-trash" style="font-size: 0.7rem;"></i>
+                      </button>
+                  `;
+              }
+  
+              // Set HTML and add event listeners
+              listItem.innerHTML = notificationHTML;
+              listItem.addEventListener("click", (e) => {
+                  if (!e.target.closest(".delete-notification")) {
+                      if (notification.type === "poll-join" || notification.type === "poll-leave") {
+                          window.location.href = `/poll/${notification.pollId}`;
+                      } else {
+                          handleNotificationClick(notification._id);
+                      }
+                  }
+              });
+  
+              listItem.style.cursor = "default";
+              notificationDiv.appendChild(listItem);
+          });
+  
+          // Update badge and header
+          const badgeNumber = document.getElementById("badge-number");
+          const dropdownHeader = document.getElementById("dropdown-header");
+  
+          if (badgeNumber) badgeNumber.textContent = notifications.length;
+          if (dropdownHeader) {
+              dropdownHeader.textContent =
+                  notifications.length > 0
+                      ? `You have ${notifications.length} notification(s)`
+                      : "No Notifications";
+          }
+      });
+  }
+  
+  
+  function timeSince(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+  
+      if (seconds < 60) {
+          return `${seconds} seconds ago`;
+      }
+  
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) {
+          return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      }
+  
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) {
+          return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      }
+  
+      const days = Math.floor(hours / 24);
+      if (days < 30) {
+          return `${days} day${days > 1 ? 's' : ''} ago`;
+      }
+  
+      const months = Math.floor(days / 30);
+      if (months < 12) {
+          return `${months} month${months > 1 ? 's' : ''} ago`;
+      }
+  
+      const years = Math.floor(months / 12);
+      return `${years} year${years > 1 ? 's' : ''} ago`;
+  }
+  
+  async function deleteNotification(notificationId, event) {
+    event.stopPropagation();
+    try {
+      await fetch(`/api/delete-notification/${notificationId}`, { method: 'DELETE' });
+      displayNotifications();
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  }
+  
+  document.querySelector('.clear-all')?.addEventListener('click', async () => {
+    try {
+      await fetch('/api/clear-notifications', { method: 'DELETE' });
+      displayNotifications();
+    } catch (error) {
+      console.error('Error clearing notifications:', error);
+    }
+  });
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    displayNotifications();
+    setInterval(displayNotifications, 30000); // Refresh every 30 seconds
+  });
+        </script>
+        
+        
+        <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            // Initialize all dropdowns
+            var dropdownElementList = [].slice.call(
+              document.querySelectorAll('[data-bs-toggle="dropdown"]')
+            );
+            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+              return new bootstrap.Dropdown(dropdownToggleEl);
+            });
+          });
+          </script>
+    </nav><!-- End Icons Navigation -->
+    <script>
+      async function handleNotificationClick(notificationId) {
+        try {
+          // Mark notification as read
+          await fetch(`/api/mark-notification-read/${notificationId}`, {
+            method: 'POST'
+          });
+    
+          // Get redirect URL
+          const response = await fetch(`/api/notification-redirect/${notificationId}`);
+          const data = await response.json();
+          
+          if (data.success && data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          }
+        } catch (error) {
+          console.error('Error handling notification click:', error);
+        }
+      }
+    
+      // Update your notification item click handler
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.addEventListener('click', function() {
+          const notificationId = this.dataset.notificationId;
+          handleNotificationClick(notificationId);
+        });
+      });
+    </script>
+  </header>
+
+  </header><!-- End Header -->
+
+  
+    <!-- ======= Sidebar ======= -->
+    <!-- End Sidebar-->
+  
+    <main id="main" class="main">
+  
+      <div class="pagetitle">
+        <h1>Poll's</h1>
+        <nav>
+          
+        </nav>
+      </div><!-- End Page Title -->
+  
+      <section class="section">
+        <% if (poll.length > 0) { %>
+            <% poll.forEach(function(poll) { %>
+                <div class="poll-container">
+                    <div class="profile-details">
+                        <img src="/assets/img/<%= user.ProfileImg %>" class="profile-image" alt="Profile Image">
+                        <p class="username"><%= user.Username %></p>
+                    </div> 
+                    <div class="task">
+                        <h2><%= poll.Title %></h2>
+                        <p><%= poll.Description %></p>
+                        <p>Time: <%= poll.Time %></p>
+                        <form action="/join" method="POST">
+                            <input type="hidden" name="task" value="<%= poll.Title %>">
+                            <button type="submit">Join Task</button>
+                        </form>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <p>No polls available.</p>
+        <% } %>
+    </section>
+  
+    </main><!-- End #main -->
+  
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+      <div class="copyright">
+        © Copyright <strong><span>College Connect</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      </div>
+    </footer><!-- End Footer -->
+  
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  
+    <!-- Vendor JS Files -->
+    
+    <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/vendor/chart.js/chart.umd.js"></script>
+    <script src="/assets/vendor/echarts/echarts.min.js"></script>
+    <script src="/assets/vendor/quill/quill.min.js"></script>
+    <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/assets/vendor/php-email-form/validate.js"></script>
+  
+    <!-- Template Main JS File -->
+     <style>
+      /* Basic button styling */
+
+      .profile-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+      .username {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+        }
+
+            .follow-btn {
+        background-color: #007bff; /* Primary color for follow */
+        color: white; /* Text color */
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        outline: none;
+        }
+
+        /* Hover and focus effects */
+        .follow-btn:hover,
+        .follow-btn:focus {
+        background-color: #0056b3; /* Darker color on hover/focus */
+        transform: scale(1.05); /* Slightly enlarge button */
+        }
+
+        /* Active state */
+        .follow-btn:active {
+        background-color: #004085; /* Even darker color when clicked */
+        transform: scale(0.95); /* Slightly shrink button */
+        }
+
+        /* Unfollow state styling */
+        .follow-btn.unfollow {
+        background-color: #dc3545; /* Red color for unfollow */
+        }
+
+        .follow-btn.unfollow:hover,
+        .follow-btn.unfollow:focus {
+        background-color: #c82333; /* Darker red on hover/focus */
+        }
+
+        .poll-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: center;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .poll-container:hover {
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .task {
+            margin-top: 20px;
+        }
+
+        .task h2 {
+            font-size: 22px;
+            color: #444;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            background-color: #004494;
+            transform: scale(1);
+        }
+        .profile-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        }
+     </style>
+    <script src="/assets/js/main.js"></script>
+  
+  
+  
+  <svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg></body></html>

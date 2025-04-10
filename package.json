@@ -1,0 +1,43 @@
+{
+  "dependencies": {
+    "@faker-js/faker": "^9.5.1",
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "csurf": "^1.10.0",
+    "ejs": "^3.1.9",
+    "express": "^4.21.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.18.0",
+    "faker": "^6.6.6",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.0",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.0.3",
+    "socket.io": "^4.8.1"
+  },
+  "name": "awp_project_2",
+  "description": "This repository hosts a second-year college project employing Node.js, Express.js, Angular.js, and MongoDB. The primary goal is to establish a Cycle Rental Service, facilitating easy cycling rentals and listings. The platform aims to enhance sustainable transportation accessibility and foster a community-driven cycling approach.",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Puravcodes/AWP_Project_2.git"
+  },
+  "keywords": [
+    "Cycle",
+    "Renting",
+    "App"
+  ],
+  "author": "leroy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Puravcodes/AWP_Project_2/issues"
+  },
+  "homepage": "https://github.com/Puravcodes/AWP_Project_2#readme"
+}

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Sign Up</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="assets/img/logo.png" rel="icon">
+  <link href="assets/img/logo.png" rel="apple-touch-icon">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" rel="stylesheet">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+  <!-- Add this in the <head> section, after other CSS links -->
+<!-- Update the profile image styles in the <style> section -->
+<style>
+  :root {
+    --primary-color: #012970;
+    --secondary-color: #4154f1;
+    --gradient: linear-gradient(135deg, #012970 0%, #4154f1 100%);
+  }
+  .profile-image-container {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .croppie-container {
+        padding: 20px;
+    }
+  body {
+    background: #f6f9ff;
+    font-family: 'Poppins', sans-serif;
+  }
+  .card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(1, 41, 112, 0.1);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .card-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.8rem !important;
+    margin-bottom: 0.5rem;
+  }
+  .form-control {
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    border: 1px solid #e4e6ef;
+    transition: all 0.3s ease;
+  }
+  .form-control:focus {
+    box-shadow: 0 0 0 3px rgba(65, 84, 241, 0.15);
+    border-color: var(--secondary-color);
+  }
+  .form-label {
+    color: #566a7f;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+  .btn-primary {
+    background: var(--gradient);
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(1, 41, 112, 0.2);
+  }
+  #current-profile-image {
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 5px 15px rgba(1, 41, 112, 0.2);
+    transition: all 0.3s ease;
+  }
+  .dots-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    background: #e4e6ef;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .dot.active {
+    width: 25px;
+    border-radius: 5px;
+    background: var(--gradient);
+  }
+  .form-part {
+    animation: fadeIn 0.5s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .alert {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+    animation: slideDown 0.5s ease;
+  }
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .section.register {
+    background: url('/assets/img/bg-pattern.png') center/cover no-repeat fixed;
+  }
+  .invalid-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+  select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23566a7f' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+</style>
+
+<!-- Update the form container structure -->
+
+  <!-- =======================================================
+  * Template Name: NiceAdmin
+  * Updated: Jan 09 2024 with Bootstrap v5.3.2
+  * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
+</head>
+
+<body>
+  <main>
+
+    <% if(messages.error) { %>
+      <div id="flash-message" class="alert alert-danger text-center">
+        <%=messages.error%>
+      </div>
+    <% } %>
+    
+    <script>
+      window.onload = function() {
+    var flashMessage = document.getElementById('flash-message');
+    if (flashMessage && flashMessage.textContent.trim().length > 0) {
+        setTimeout(function() {
+            flashMessage.parentNode.removeChild(flashMessage);
+        }, 5000);
+    }
+};
+    </script>
+
+    <div class="container">
+
+      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+              <div class="d-flex justify-content-center py-4">
+                <a href="/" class="logo d-flex align-items-center w-auto">
+                  <img src="assets/img/logo.png" alt=""  style="height: 85px;">
+                </a>
+              </div><!-- End Logo -->
+
+              <div class="card mb-3">
+
+                <div class="card-body">
+
+                  <div class="pt-4 pb-2">
+                    <h5 class="card-title text-center pb-0 fs-4">Create an Account</h5>
+                    <p class="text-center small">Enter your personal details to create account</p>
+                  </div>
+
+                  <form class="row g-3 needs-validation" action="/signup" method="POST" enctype="multipart/form-data" novalidate>
+                    <!-- Part 1 -->
+                    <div class="form-part" id="form-part-1">
+                        <div class="align-items-center" style="text-align: center;">
+                            <label for="profileImage" class="col-12 mb-2">Profile Photo</label><br>
+                            <div class="col-12">
+                                <img id="current-profile-image" src="assets/img/default-avatar.png" style="max-width: 120px;" alt="Profile">
+                                <div class="pt-2">
+                                    <label for="profile-image-upload" class="btn btn-primary btn-sm" title="Upload new profile image">
+                                        <i class="bi bi-upload" style="color: aliceblue;"></i>
+                                        <input id="profile-image-upload" type="file" accept="image/*" name="image" style="display: none;" required>
+                                        <div class="invalid-feedback" style="color: aliceblue;">Please, Upload Profile Photo!</div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <div class="col-12">
+                            <label for="yourName" class="form-label">First Name</label>
+                            <input type="text" name="firstname" pattern="[^\s]+" class="form-control" id="yourName" oninput="validateInput(this)" required>
+                            <div class="invalid-feedback">Please, enter your First name!</div>
+                        </div>
+                
+                        <div class="col-12">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" name="lastname" pattern="[^\s]+" class="form-control" id="lastName" oninput="validateInput(this)" required>
+                            <div class="invalid-feedback">Please, enter your Last name!</div>
+                        </div>
+
+                        <div class="col-12">
+                          <label for="yourEmail" class="form-label">Your Email</label>
+                          <input type="email" name="email" class="form-control" id="yourEmail" required>
+                          <div class="invalid-feedback">Please enter a valid Email address!</div>
+                      </div>
+              
+                      <div class="col-12">
+                          <label for="yourPassword" class="form-label">Password</label>
+                          <input type="password" minlength="8" maxlength="10" pattern="[^\s]+" name="password" class="form-control" id="yourPassword" required>
+                          <div class="invalid-feedback">Please enter your password!</div>
+                      </div>
+              
+                      <div class="col-12">
+                          <label for="phoneNumber" class="form-label">Phone Number</label>
+                          <input type="text" pattern="[0-9]{10}" name="phoneNumber" class="form-control" id="phoneNumber" required>
+                          <div class="invalid-feedback">Please enter your phone number</div>
+                      </div>
+
+                    </div>
+                
+                    <!-- Part 2 -->
+                    <div class="form-part" id="form-part-2" style="display:none;">
+
+                            <div class="col-12">
+                              <label for="collegeName" class="form-label">College Name</label>
+                              <input type="text" name="collegeName" class="form-control" id="collegeName" value="MKES" readonly>
+                              <div class="invalid-feedback">Please enter your College Name!</div>
+                          </div>
+                
+                          <div class="col-12">
+                              <label for="enrollmentNumber" class="form-label">Enrollment Number</label>
+                              <input type="text" name="enrollmentNumber" class="form-control" id="enrollmentNumber" required>
+                              <div class="invalid-feedback">Please enter your Enrollment Number!</div>
+                          </div>
+                
+                          <div class="col-12">
+                            <label for="courseProgram" class="form-label">Course/Program</label>
+                            <input type="text" name="courseProgram" class="form-control" id="courseProgram" value="Bachelors of Science" readonly>
+                            <div class="invalid-feedback">Please enter your Course/Program!</div>
+                        </div>
+                
+                          <div class="col-12">
+                              <label for="yearOfStudy" class="form-label">Year of Study</label>
+                              <input type="number" name="yearOfStudy" class="form-control" id="yearOfStudy" min="1" max="3" required>
+                              <div class="invalid-feedback">Please enter your Year of Study!</div>
+                          </div>
+                
+                          <div class="col-12">
+                            <label for="department" class="form-label">Department</label>
+                            <select name="department" class="form-control" id="department" required>
+                                <option value="" disabled selected>Select your Department</option>
+                                <option value="cs">Computer Science</option>
+                                <option value="it">Information Technology</option>
+                            </select>
+                            <div class="invalid-feedback">Please select your Department!</div> <br>
+                        </div>
+                      
+                        <div class="col-12">
+                            <button class="btn btn-primary w-100" type="submit">Create Account</button>
+                        </div>
+                    </div>
+                
+                    <!-- Dots Navigation -->
+                    <div class="dots-nav">
+                        <span class="dot active" onclick="currentStep(0)"></span>
+                        <span class="dot" onclick="currentStep(1)"></span>
+                    </div>
+                </form>
+                <div class="text-center mt-4">
+                  <p class="small mb-0">Already have an account? <a href="/login" class="text-primary">Log in</a></p>
+              </div>
+              
+
+                </div>
+              </div>
+
+              <div class="credits">
+                <!-- All the links in the footer should remain intact. -->
+                <!-- You can delete the links only if you purchased the pro version. -->
+                <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/chart.js/chart.umd.js"></script>
+  <script src="assets/vendor/echarts/echarts.min.js"></script>
+  <script src="assets/vendor/quill/quill.min.js"></script>
+  <script src="assets/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="assets/vendor/tinymce/tinymce.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="/assets/js/main.js"></script>
+
+  <script>
+    let currentPart = 0;
+    showPart(currentPart);
+
+    function showPart(part) {
+        let parts = document.getElementsByClassName("form-part");
+        let dots = document.getElementsByClassName("dot");
+
+        for (let i = 0; i < parts.length; i++) {
+            parts[i].style.display = "none";
+            dots[i].classList.remove("active");
+        }
+
+        parts[part].style.display = "block";
+        dots[part].classList.add("active");
+    }
+
+    function currentStep(part) {
+        currentPart = part;
+        showPart(currentPart);
+    }
+
+        // JavaScript for profile image upload
+        document.getElementById('profile-image-upload').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('current-profile-image').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+      // JavaScript for validation
+      function validateInput(input) {
+        input.value = input.value.replace(/[^a-zA-Z\s]/g, '');
+    }
+
+    (function() {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+    })();
+</script>
+<div class="modal fade" id="cropping-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title">Crop Profile Photo</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div id="croppie-container"></div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="crop-image-btn">Crop & Save</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+<script>
+  // Initialize Croppie with adjusted settings for reduced sensitivity
+  let croppieInstance;
+  const croppieContainer = document.getElementById('croppie-container');
+  const croppingModal = new bootstrap.Modal(document.getElementById('cropping-modal'));
+
+  document.getElementById('profile-image-upload').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              if (croppieInstance) croppieInstance.destroy();
+              croppieInstance = new Croppie(croppieContainer, {
+                  viewport: { width: 120, height: 120, type: 'circle' },
+                  boundary: { width: 250, height: 250 },
+                  showZoomer: true,
+                  mouseWheelZoom: false, // Disable mouse wheel zoom to avoid oversensitivity
+                  enableResize: true, // Allow resizing within boundary
+                  enableOrientation: true // Allow image rotation for alignment
+              });
+              croppieInstance.bind({ url: e.target.result });
+              croppingModal.show();
+          };
+          reader.readAsDataURL(file);
+      }
+  });
+
+  document.getElementById('crop-image-btn').addEventListener('click', function() {
+      croppieInstance.result('base64').then(function(base64) {
+          document.getElementById('current-profile-image').src = base64;
+          croppingModal.hide();
+      });
+  });
+</script>
+
+</body>
+
+</html>

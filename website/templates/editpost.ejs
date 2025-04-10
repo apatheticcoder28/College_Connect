@@ -1,0 +1,622 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  
+    <title>Edit Posts</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+  
+    <!-- Favicons -->
+    <link href="/assets/img/logo.png" rel="icon">
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet">
+    <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet">
+    <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet">
+    <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet">
+  
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet">
+  
+    <!-- =======================================================
+    * Template Name: NiceAdmin
+    * Updated: Jan 09 2024 with Bootstrap v5.3.2
+    * Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
+    * Author: BootstrapMade.com
+    * License: https://bootstrapmade.com/license/
+    ======================================================== -->
+  <style type="text/css" id="operaUserStyle"></style><style type="text/css"></style>
+
+  <script>
+    function deletePost(PID) {
+  fetch(`/post/${PID}`, {
+    method: 'DELETE'
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Post deleted successfully');
+      location.reload('/profile');
+    } else {
+      console.error('Failed to delete post');
+    }
+  })
+  .catch(error => {
+    console.error('Error deleting post:', error);
+  });
+};
+
+function approval(id) {
+    var aprv = new XMLHttpRequest();
+    aprv.open("GET", "/api/rent-approval/" + id);
+    aprv.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    aprv.onreadystatechange = function() {
+        if (aprv.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(aprv.responseText);
+            alert(res.Msg);
+        }        
+    };
+    aprv.send();
+}
+
+function denial(id) {
+    var deny = new XMLHttpRequest();
+    deny.open("GET", "/api/rent-denial/" + id);
+    deny.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+    deny.onreadystatechange = function() {
+        if (deny.readyState != 4) {
+            console.log("loading");
+        } else {
+            var res = JSON.parse(deny.responseText);
+            alert(res.Msg);
+        }
+    };
+    deny.send();
+}
+
+function dismiss(id){
+  var dismis = new XMLHttpRequest();
+  dismis.open("GET", "/api/dismiss/" + id);
+  dismis.onreadystatechange = function(){
+    if (dismis.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(dismis.responseText);
+      alert(res.Msg);
+    }
+  };
+  dismis.send();
+}
+
+
+function getNotifications(callback){
+  var notif = new XMLHttpRequest();
+  notif.open("GET", "/api/get-notifications");
+  notif.onreadystatechange = function(){
+    if (notif.readyState != 4) {
+      console.log("loading");
+    } else {
+      var res = JSON.parse(notif.responseText);
+      let notifi=[];
+      for(let i=0; i<res.Notifications.length; i++){
+        let newobj={
+          'Title' : res.Notifications[i].Title,
+          'Description' : res.Notifications[i].Description,
+          'PID' : res.Notifications[i].Post,
+          'ApprovalNeeded' : res.Notifications[i].ApprovalNeeded,
+          'RenterID' : res.Notifications[i].Users.Renter,
+          'LeaserID' :res.Notifications[i].Users.Leaser,
+          'ID' : res.Notifications[i]._id
+        }
+        notifi.push(newobj);
+      }
+      callback(notifi);
+    }
+  };
+  notif.send();
+}
+
+
+function displayNotifications() {
+  let notif = getNotifications(function(notifi) {
+
+  var badgeNumber = document.getElementById("badge-number");
+    var dropdownHeader = document.getElementById("dropdown-header");
+    var notificationDiv = document.getElementById("notification");
+
+    badgeNumber.textContent = notifi.length;
+
+    dropdownHeader.textContent = "You have " + notifi.length + " new notification(s)";
+    notificationDiv.innerHTML = "";
+
+    notifi.forEach(function(notification) {
+      var hr = document.createElement("hr");
+      
+      var listItem = document.createElement("li");
+      listItem.className = "message-item";
+      listItem.id = "message-item";
+      listItem.style.paddingBottom = 0;
+      
+      var div = document.createElement("div");
+      
+      if (notification.ApprovalNeeded === true) {
+        var titleLink = document.createElement("a");
+        titleLink.href = "/post/" + notification.PID;
+        var title = document.createElement("h4");
+        title.textContent = notification.Title;
+        title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+
+            var descLink = document.createElement("a");
+            descLink.href = "/profileview/" + notification.RenterID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+
+            var approvalDiv = document.createElement("div");
+            approvalDiv.className = "row";
+            approvalDiv.id = "approval";
+            approvalDiv.style.marginLeft = "2rem";
+
+            var approveButton = document.createElement("button");
+            approveButton.className = "col-1 btn btn-success";
+            approveButton.textContent = "Approve";
+            approveButton.style.width = "7rem";
+            approveButton.style.height = "2rem";
+            approveButton.style.textAlign = "center";
+            approveButton.style.marginRight = "1rem";
+            approveButton.onclick = function() {
+              approval(notification.ID);
+              location.reload();
+            };
+            
+            var denyButton = document.createElement("button");
+            denyButton.className = "col-1 btn btn-danger";
+            denyButton.textContent = "Deny";
+            denyButton.style.width = "7rem";
+            denyButton.style.height = "2rem";
+            denyButton.style.textAlign = "center";
+            denyButton.onclick = function() {
+              denial(notification.ID);
+              location.reload();
+            };
+            
+            approvalDiv.appendChild(approveButton);
+            approvalDiv.appendChild(denyButton);
+            div.appendChild(approvalDiv);
+          } else if (notification.ApprovalNeeded === false) {
+            var titleLink = document.createElement("a");
+            titleLink.href = "/profileview/" + notification.LeaserID;
+            var title = document.createElement("h4");
+            title.textContent = notification.Title;
+            title.style.color = "blue";
+            titleLink.appendChild(title);
+            div.appendChild(titleLink);
+            
+            var descLink = document.createElement("a");
+            descLink.href = "/post/" + notification.PID;
+            var desc = document.createElement("p");
+            desc.textContent = notification.Description;
+            descLink.appendChild(desc);
+            div.appendChild(descLink);
+            
+            var dismissDiv = document.createElement("div");
+            dismissDiv.className = "row";
+            dismissDiv.id = "Dismiss";
+            dismissDiv.style.marginLeft = "2rem";
+            
+            var NID=notification.ID;
+            var dismissButton = document.createElement("button");
+            dismissButton.className = "col-1 btn btn-danger";
+            dismissButton.textContent = "Dismiss X";
+            dismissButton.style.width = "7rem";
+            dismissButton.style.height = "2rem";
+            dismissButton.style.textAlign = "center";
+            dismissButton.style.marginLeft = "5rem";
+            dismissButton.onclick = async function() {
+              await dismiss(NID);
+            };
+
+            dismissDiv.appendChild(dismissButton);
+            div.appendChild(dismissDiv);
+        }
+
+        listItem.appendChild(hr);
+        listItem.appendChild(div);
+
+        notificationDiv.appendChild(listItem);
+        
+      });
+    });
+
+}
+displayNotifications();
+
+  </script>
+  
+</head>
+  
+  <body class="">
+  
+  <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/home" class="logo d-flex align-items-center" style="width: 150px;height: 10px;">
+        <img src="/assets/img/logo.png" alt="logo" style="height: 60px;">
+      </a>
+      
+    </div><!-- End Logo -->
+
+    <div class="input-group search-bar" style="width: 30rem;">
+      <form class="search-form d-flex align-items-center" method="POST" action="/search">
+        <input type="text" class="form-control" name="pincode" placeholder="Pincode" title="Enter search Pincode" style="width: 10rem;" oninput="validateInput(this)" minlength="6" maxlength="6" required> 
+        <input type="text" class="form-control" pattern="^[^\s\d].*$" name="model" placeholder="Search" title="Enter search Model">
+        <div class="input-group-append">
+          <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+        </div>  
+      </form>
+    </div><!-- End Search Bar -->
+  
+    <script>
+      function validateInput(input) {
+          input.value = input.value.replace(/[^0-9]/g, '');
+      }
+      </script>
+  
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+  
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li>
+        <!-- End Search Icon-->
+
+        <li class="nav-item" id="notifnav">
+          <button class="nav-link nav-icon show" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell"></i>
+            <span class="badge bg-primary badge-number" id="badge-number"></span>
+          </button><!-- End Messages Icon -->
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate3d(-133.091px, 42.9091px, 0px);overflow-y:scroll; height:300px;" data-popper-placement="bottom-end" data-popper-placement="bottom-end">
+            <li class="dropdown-header" id="dropdown-header">
+              No Notifications
+            </li>
+            <div id="notification"></div>
+        </ul>
+        </li>
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="/assets/img/<%= user.ProfileImg %>" alt="ProfileImg">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><%=  user.Username %></span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header" >
+              <h6><%=  user.Username %> </h6>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/profile">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+
+            <li>
+             <!-- <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
+                <i class="bi bi-gear"></i>
+                <span>Account Settings</span>
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>-->
+
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="/logout">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+  
+    <!-- ======= Sidebar ======= -->
+    <!-- End Sidebar-->
+
+
+    <main id="main" class="main">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="create-poll-card">
+                        <h2 class="text-center title-underline mb-4">Edit Post</h2>
+                        <form action="/edit-post/<%= post.id %>" class="needs-validation" method="post" enctype="multipart/form-data" id="myForm" novalidate>
+                            <!-- Image preview section -->
+                            <div class="mb-4">
+                                <div class="image-preview">
+                                    <img src="/assets/img/<%= post.Image %>" alt="Current Post Image" class="preview-image">
+                                    <div class="upload-overlay">
+                                        <i class="bi bi-cloud-upload"></i>
+                                        <p class="upload-text">Click to update image</p>
+                                    </div>
+                                    <input type="file" name="image" class="form-control d-none" accept="image/*" id="PostImage">
+                                </div>
+                                <small class="text-muted d-block text-center mt-2">Leave empty to keep current image</small>
+                            </div>
+
+                            <!-- Title -->
+                            <div class="row mb-3">
+                                <label for="PostTitle" class="col-md-4 col-lg-3 col-form-label">Title</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="Title" type="text" class="form-control" id="PostTitle" value="<%= post.Title %>" pattern="^(?!\s*$).+" title="Title cannot be empty or contain only spaces" required>
+                                    <div class="invalid-feedback">Please provide a Title that is not empty or containing only spaces.</div>
+                                </div>
+                            </div>
+                        
+                            <!-- Caption -->
+                            <div class="row mb-3">
+                                <label for="PostContent" class="col-md-4 col-lg-3 col-form-label">Caption</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <textarea name="Caption" class="form-control" id="PostContent" rows="3" required><%= post.Caption %></textarea>
+                                    <div class="invalid-feedback">Please provide a Caption that is not empty or containing only spaces.</div>
+                                </div>
+                            </div>
+                        
+                            <!-- Tags/Categories -->
+                            <div class="row mb-3">
+                                <label for="Tags" class="col-md-4 col-lg-3 col-form-label">Tags/Categories</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="Tags" type="text" class="form-control" id="Tags" value="<%= post.Tags %>" pattern="^(?!\s*$).+" title="Tags cannot be empty or contain only spaces" required>
+                                    <div class="invalid-feedback">Please provide Tags or Categories that are not empty or containing only spaces.</div>
+                                </div>
+                            </div>
+                        
+                            <!-- Location -->
+                            <div class="row mb-3">
+                                <label for="PostLocation" class="col-md-4 col-lg-3 col-form-label">Location</label>
+                                <div class="col-md-8 col-lg-9">
+                                    <input name="Location" type="text" class="form-control" id="PostLocation" value="<%= post.Location %>" pattern="^(?!\s*$).+" title="Location cannot contain only spaces">
+                                    <div class="invalid-feedback">Please provide a Location (if relevant) that is not empty or containing only spaces.</div>
+                                </div>
+                            </div>
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <a href="/profile" class="btn btn-secondary me-2">Cancel</a>
+                                <button type="submit" class="btn btn-primary">Update Post</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+  
+    <!-- ======= Footer ======= -->
+    <footer id="footer" class="footer">
+      <div class="copyright">
+        © Copyright <strong><span>College Connect</span></strong>. All Rights Reserved
+      </div>
+      <div class="credits">
+        <!-- All the links in the footer should remain intact. -->
+        <!-- You can delete the links only if you purchased the pro version. -->
+        <!-- Licensing information: https://bootstrapmade.com/license/ -->
+        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
+      </div>
+    </footer><!-- End Footer -->
+  
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+  
+    <!-- Vendor JS Files -->
+    <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
+    <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/vendor/chart.js/chart.umd.js"></script>
+    <script src="/assets/vendor/echarts/echarts.min.js"></script>
+    <script src="/assets/vendor/quill/quill.min.js"></script>
+    <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+    <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
+    <script src="/assets/vendor/php-email-form/validate.js"></script>
+  
+    <!-- Template Main JS File -->
+    <script src="/assets/js/main.js"></script>
+  
+  
+  
+  <svg id="SvgjsSvg1001" width="2" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev" style="overflow: hidden; top: -100%; left: -100%; position: absolute; opacity: 0;"><defs id="SvgjsDefs1002"></defs><polyline id="SvgjsPolyline1003" points="0,0"></polyline><path id="SvgjsPath1004" d="M0 0 "></path></svg></body></html>
+
+<style>
+    .main {
+        padding-top: 60px;
+        min-height: calc(100vh - 60px);
+        background: #f6f9ff;
+    }
+
+    .create-poll-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(1, 41, 112, 0.1);
+        background: #fff;
+        transition: all 0.3s ease;
+        padding: 2.5rem;
+        margin-top: 2rem;
+    }
+
+    .create-poll-card:hover {
+        box-shadow: 0 0 30px rgba(1, 41, 112, 0.2);
+    }
+
+    .image-preview {
+        width: 100%;
+        height: 400px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* Changed from cover to contain */
+        background: #f8f9fa;
+        padding: 10px;
+    }
+
+    .upload-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(1, 41, 112, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .upload-overlay i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .upload-text {
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .image-preview:hover {
+        border-color: #012970;
+    }
+
+    .image-preview:hover .upload-overlay {
+        opacity: 1;
+    }
+
+    .form-label {
+        color: #012970;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #012970;
+        box-shadow: 0 0 0 0.2rem rgba(1, 41, 112, 0.25);
+    }
+
+    .btn {
+        padding: 0.6rem 2rem;
+        border-radius: 50px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.2);
+    }
+
+    .btn-primary {
+        background: #012970;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: #012970;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(1, 41, 112, 0.2);
+    }
+
+    .title-underline {
+        color: #012970;
+        font-weight: 600;
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+    }
+
+    .title-underline::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: #012970;
+        border-radius: 2px;
+    }
+</style>
+
+<script>
+    // Image preview functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const imagePreview = document.querySelector('.image-preview');
+        const fileInput = document.getElementById('PostImage');
+        const previewImage = document.querySelector('.preview-image');
+
+        imagePreview.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    });
+</script>

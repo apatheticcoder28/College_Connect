@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #2b2d42;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        
+        .header h1 {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: var(--dark-color);
+            opacity: 0.8;
+        }
+        
+        .calendar-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-container:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* FullCalendar Custom Styling */
+        .fc-button-primary {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        
+        .fc-button-primary:hover {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+        
+        .fc-daygrid-day.fc-day-today {
+            background-color: rgba(67, 97, 238, 0.1) !important;
+        }
+        
+        .fc-event {
+            background-color: var(--primary-light) !important;
+            border: none !important;
+            border-radius: 5px !important;
+            padding: 3px 6px !important;
+            font-size: 0.85em !important;
+            transition: transform 0.2s ease;
+        }
+        
+        .fc-event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Modal Styling */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+        
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+            border-radius: 8px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d01b6f;
+            border-color: #d01b6f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.3);
+        }
+        
+        .form-label {
+            font-weight: 500;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+        
+        /* Add event button */
+        .add-event-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(247, 37, 133, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .add-event-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.5);
+        }
+        
+        /* Tooltip styling */
+        .event-tooltip {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 10px;
+            max-width: 300px;
+        }
+        
+        .event-tooltip-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .event-tooltip-time {
+            font-size: 0.85em;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+        
+        .event-tooltip-desc {
+            font-size: 0.9em;
+            color: var(--dark-color);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .calendar-container {
+                padding: 15px;
+            }
+            
+            .fc-header-toolbar {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .add-event-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <i class="bi bi-shield-lock"></i>
+            Admin Dashboard
+        </div>
+    </div>
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+    
+        .sidebar-header {
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+    
+        .sidebar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+    
+        .sidebar-brand i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+        }
+    
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+    
+        .nav-link.active, .nav-link:hover {
+            background: linear-gradient(135deg, #4361ee, #4895ef);
+            color: white;
+        }
+    
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+    
+        .app-container {
+            margin-left: 280px; /* Adjust the margin to accommodate the sidebar */
+            max-width: calc(100% - 280px); /* Ensure the calendar doesn't overlap */
+        }
+    
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+    
+            .app-container {
+                margin-left: 0;
+                max-width: 100%;
+            }
+        }
+    </style>
+<ul class="nav flex-column">
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/">
+            <i class="bi bi-grid"></i> Overview
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/users">
+            <i class="bi bi-people"></i> Manage Users
+        </a>
+    </li>
+    <!-- Add Events section here -->
+    <li class="nav-item">
+        <a class="nav-link active" href="/admin/events"> <!-- Set active class here -->
+            <i class="bi bi-calendar-event"></i> Events
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/logout">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </li>
+</ul>
+</div>
+    <div class="app-container">
+        <div class="header">
+            <h1><i class="fas fa-calendar-alt me-2"></i>Events Manager</h1>
+            <p>Organize your schedule and manage your events effectively</p>
+        </div>
+        
+        <div class="calendar-container">
+            <div id="calendar"></div>
+        </div>
+    </div>
+    
+    <!-- Floating add event button -->
+    <button class="add-event-btn" id="addEventBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Event Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">
+                        <i class="fas fa-calendar-day me-2"></i>
+                        <span id="modalActionText">Add New Event</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="eventForm">
+                        <input type="hidden" id="eventId" name="eventId" />
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">
+                                <i class="fas fa-heading me-2"></i>Event Title
+                            </label>
+                            <input type="text" id="eventTitle" name="title" class="form-control" placeholder="Enter event title" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">
+                                <i class="fas fa-calendar me-2"></i>Event Date
+                            </label>
+                            <input type="date" id="eventDate" name="date" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventTime" class="form-label">
+                                <i class="fas fa-clock me-2"></i>Event Time
+                            </label>
+                            <input type="time" id="eventTime" name="time" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">
+                                <i class="fas fa-align-left me-2"></i>Description
+                            </label>
+                            <textarea id="eventDescription" name="description" class="form-control" placeholder="Add details about this event" rows="3"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Event
+                            </button>
+                            <button type="button" id="deleteEvent" class="btn btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Delete
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <!-- Popper JS (for tooltips) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const eventModal = new bootstrap.Modal(document.getElementById('eventModal'));
+            const eventForm = document.getElementById('eventForm');
+            const deleteEventButton = document.getElementById('deleteEvent');
+            const addEventBtn = document.getElementById('addEventBtn');
+            const modalActionText = document.getElementById('modalActionText');
+            
+            // Initialize tooltip container for event hover
+            const tooltipContainer = document.createElement('div');
+            tooltipContainer.className = 'event-tooltip';
+            tooltipContainer.style.position = 'absolute';
+            tooltipContainer.style.display = 'none';
+            tooltipContainer.style.zIndex = '10000';
+            document.body.appendChild(tooltipContainer);
+            
+            // Format time to AM/PM
+            function formatTime(timeStr) {
+                if (!timeStr) return '';
+                const [hours, minutes] = timeStr.split(':');
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const formattedHours = hours % 12 || 12;
+                return `${formattedHours}:${minutes} ${period}`;
+            }
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                buttonText: {
+                    today: 'Today',
+                    month: 'Month',
+                    week: 'Week',
+                    day: 'Day'
+                },
+                height: 'auto',
+                selectable: true,
+                selectMirror: true,
+                navLinks: true,
+                editable: true,
+                dayMaxEvents: true,
+                events: '/api/events', // Fetch events from the API
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: 'short'
+                },
+                dateClick: function (info) {
+                    // Reset the form for adding a new event
+                    eventForm.reset();
+                    document.getElementById('eventId').value = ''; // Ensure no ID is set
+                    document.getElementById('eventDate').value = info.dateStr;
+                    deleteEventButton.style.display = 'none'; // Hide delete button for new events
+                    modalActionText.textContent = 'Add New Event';
+                    eventModal.show(); // Show modal
+                },
+                eventClick: function (info) {
+                    // Populate the modal with existing event data
+                    document.getElementById('eventId').value = info.event.id;
+                    document.getElementById('eventTitle').value = info.event.title;
+                    document.getElementById('eventDate').value = info.event.startStr.split('T')[0];
+                    document.getElementById('eventTime').value = info.event.startStr.split('T')[1]?.substring(0, 5) || '';
+                    document.getElementById('eventDescription').value = info.event.extendedProps.description || '';
+                    deleteEventButton.style.display = 'inline-block'; // Show delete button
+                    modalActionText.textContent = 'Edit Event';
+                    eventModal.show(); // Show modal
+                },
+                eventMouseEnter: function(info) {
+                    const event = info.event;
+                    const rect = info.el.getBoundingClientRect();
+                    
+                    tooltipContainer.innerHTML = `
+                        <div class="event-tooltip-title">${event.title}</div>
+                        <div class="event-tooltip-time">
+                            <i class="fas fa-clock me-1"></i>
+                            ${formatTime(event.startStr.split('T')[1]?.substring(0, 5) || '')}
+                        </div>
+                        ${event.extendedProps.description ? 
+                          `<div class="event-tooltip-desc">${event.extendedProps.description}</div>` : ''}
+                    `;
+                    
+                    tooltipContainer.style.display = 'block';
+                    tooltipContainer.style.left = `${rect.right + 10}px`;
+                    tooltipContainer.style.top = `${rect.top}px`;
+                    
+                    // Adjust position if tooltip goes off screen
+                    const tooltipRect = tooltipContainer.getBoundingClientRect();
+                    if (tooltipRect.right > window.innerWidth) {
+                        tooltipContainer.style.left = `${rect.left - tooltipRect.width - 10}px`;
+                    }
+                },
+                eventMouseLeave: function() {
+                    tooltipContainer.style.display = 'none';
+                },
+                eventDidMount: function(info) {
+                    // Add animation to events
+                    info.el.style.transition = 'all 0.3s ease';
+                },
+                // Add color based on time of day
+                eventDidMount: function(info) {
+                    const eventTime = info.event.startStr.split('T')[1]?.substring(0, 5) || '';
+                    if (!eventTime) return;
+                    
+                    const [hours] = eventTime.split(':').map(Number);
+                    
+                    // Morning: 5-11, Afternoon: 12-16, Evening: 17-21, Night: 22-4
+                    if (hours >= 5 && hours <= 11) {
+                        info.el.style.backgroundColor = '#4cc9f0'; // Morning - Blue
+                    } else if (hours >= 12 && hours <= 16) {
+                        info.el.style.backgroundColor = '#4361ee'; // Afternoon - Purple
+                    } else if (hours >= 17 && hours <= 21) {
+                        info.el.style.backgroundColor = '#3f37c9'; // Evening - Dark Purple
+                    } else {
+                        info.el.style.backgroundColor = '#f72585'; // Night - Pink
+                    }
+                }
+            });
+
+            calendar.render();
+            
+            // Add event button click handler
+            addEventBtn.addEventListener('click', function() {
+                eventForm.reset();
+                document.getElementById('eventId').value = '';
+                document.getElementById('eventDate').value = new Date().toISOString().split('T')[0];
+                deleteEventButton.style.display = 'none';
+                modalActionText.textContent = 'Add New Event';
+                eventModal.show();
+            });
+
+            // Handle form submission (Create or Update)
+            eventForm.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(eventForm);
+                const eventId = document.getElementById('eventId').value;
+                const method = eventId ? 'PUT' : 'POST';
+                const url = eventId ? `/api/events/${eventId}` : '/api/events';
+                
+                // Add loading state
+                const submitBtn = eventForm.querySelector('[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                submitBtn.disabled = true;
+
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Object.fromEntries(formData)),
+                    });
+
+                    if (response.ok) {
+                        // Show success message
+                        const successToast = document.createElement('div');
+                        successToast.className = 'position-fixed top-0 end-0 p-3';
+                        successToast.style.zIndex = '5000';
+                        successToast.innerHTML = `
+                            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header bg-success text-white">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong class="me-auto">Success</strong>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    Event has been ${eventId ? 'updated' : 'created'} successfully!
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(successToast);
+                        
+                        // Remove toast after 3 seconds
+                        setTimeout(() => {
+                            successToast.remove();
+                        }, 3000);
+                        
+                        calendar.refetchEvents(); // Refresh events
+                        eventModal.hide(); // Hide modal
+                    } else {
+                        alert('Failed to save event. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                } finally {
+                    // Restore button state
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+
+            // Handle event deletion
+            deleteEventButton.addEventListener('click', async function () {
+                const eventId = document.getElementById('eventId').value;
+                if (!eventId) return; // Do nothing if no ID is set
+
+                const confirmation = confirm('Are you sure you want to delete this event?');
+                if (!confirmation) return;
+                
+                // Add loading state
+                deleteEventButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Deleting...';
+                deleteEventButton.disabled = true;
+
+                try {
+                    const response = await fetch(`/api/events/${eventId}`, {
+                        method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                        // Show success message
+                        const successToast = document.createElement('div');
+                        successToast.className = 'position-fixed top-0 end-0 p-3';
+                        successToast.style.zIndex = '5000';
+                        successToast.innerHTML = `
+                            <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header bg-danger text-white">
+                                    <i class="fas fa-trash-alt me-2"></i>
+                                    <strong class="me-auto">Deleted</strong>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    Event has been deleted successfully!
+                                </div>
+                            </div>
+                        `;
+                        document.body.appendChild(successToast);
+                        
+                        // Remove toast after 3 seconds
+                        setTimeout(() => {
+                            successToast.remove();
+                        }, 3000);
+                        
+                        calendar.refetchEvents(); // Refresh events
+                        eventModal.hide(); // Hide modal
+                    } else {
+                        alert('Failed to delete event. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                } finally {
+                    // Restore button state
+                    deleteEventButton.innerHTML = '<i class="fas fa-trash-alt me-2"></i>Delete';
+                    deleteEventButton.disabled = false;
+                }
+            });
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Alt + N to add new event
+                if (e.altKey && e.key === 'n') {
+                    e.preventDefault();
+                    addEventBtn.click();
+                }
+                
+                // Escape to close modal
+                if (e.key === 'Escape' && document.getElementById('eventModal').classList.contains('show')) {
+                    eventModal.hide();
+                }
+            });
+            
+            // Window resize handler for tooltip position
+            window.addEventListener('resize', function() {
+                tooltipContainer.style.display = 'none';
+            });
+            
+            // Add intro animation to calendar
+            setTimeout(() => {
+                document.querySelector('.calendar-container').style.opacity = '0';
+                document.querySelector('.calendar-container').style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    document.querySelector('.calendar-container').style.transition = 'all 0.5s ease';
+                    document.querySelector('.calendar-container').style.opacity = '1';
+                    document.querySelector('.calendar-container').style.transform = 'translateY(0)';
+                }, 100);
+            }, 0);
+        });
+    </script>
+</body>
+</html>

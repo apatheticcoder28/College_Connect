@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --text-color: #2b2d42;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --info-color: #480ca8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 280px;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            padding: 30px 20px;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .sidebar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-brand i {
+            font-size: 1.8rem;
+            margin-right: 10px;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-welcome {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 20px;
+            border-radius: 15px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.15);
+        }
+
+        .admin-welcome h1 {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .admin-welcome p {
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            background: white;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-stats {
+            padding: 25px;
+            text-align: center;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .card-stats:hover {
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+        .stats-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 28px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-icon.blue {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .stats-icon.green {
+            background: linear-gradient(135deg, #2ec4b6, #20a4f3);
+            color: white;
+        }
+
+        .stats-icon.orange {
+            background: linear-gradient(135deg, #ff9e00, #ff0058);
+            color: white;
+        }
+
+        .stats-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .stats-text {
+            font-size: 15px;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .nav-link {
+            color: var(--text-color);
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            color: white;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        .flash-messages {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .alert {
+            margin-bottom: 15px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            border: none;
+            padding: 15px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .alert-success {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            color: white;
+        }
+
+        .custom-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1100;
+            min-width: 300px;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .custom-alert h4 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+        }
+
+        .custom-alert .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .custom-alert button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .custom-alert .confirm-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .custom-alert .cancel-delete {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Post and Poll Card Styles */
+        .content-card {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            height: 100%;
+            background: white;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-info h5 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .user-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .post-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        .post-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .content-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .post-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .post-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .post-meta i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .post-meta span {
+            margin-right: 15px;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .poll-details {
+            margin-top: 15px;
+        }
+
+        .poll-stat {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .poll-stat i {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 10px;
+            font-size: 0.85rem;
+        }
+
+        .actions {
+            display: flex;
+            margin-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(67, 97, 238, 0.05);
+            color: var(--primary-color);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .action-btn i {
+            margin-right: 5px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 991px) {
+            .sidebar {
+                width: 250px;
+            }
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .toggle-sidebar {
+                display: block;
+            }
+        }
+
+        .toggle-sidebar {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <i class="bi bi-shield-lock"></i>
+                Admin Dashboard
+            </div>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="/admin/dashboard">
+                    <i class="bi bi-grid"></i> Overview
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/users">
+                    <i class="bi bi-people"></i> Manage Users
+                </a>
+            </li>
+            <!-- Add Events section here -->
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/events">
+                    <i class="bi bi-calendar-event"></i> Events
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/logout">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <div class="flash-messages">
+            <% if (messages.success) { %>
+                <div id="flash-success" class="alert alert-success alert-dismissible fade show">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Welcome Admin <%= admin.firstName %> <%= admin.lastName %>!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="admin-welcome">
+            <h1>Welcome back, <%= admin.firstName %>!</h1>
+            <p>Here's what's happening in your platform today</p>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="stats-icon blue">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <div class="stats-number"><%= stats?.totalUsers || 0 %></div>
+                    <div class="stats-text">Total Users</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="stats-icon green">
+                        <i class="bi bi-file-earmark-post-fill"></i>
+                    </div>
+                    <div class="stats-number"><%= stats?.totalPosts || 0 %></div>
+                    <div class="stats-text">Total Posts</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-stats">
+                    <div class="stats-icon orange">
+                        <i class="bi bi-bar-chart-fill"></i>
+                    </div>
+                    <div class="stats-number"><%= stats?.totalPolls || 0 %></div>
+                    <div class="stats-text">Active Polls</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Posts Section -->
+        <h3 class="section-title mt-5 mb-4">
+            <i class="bi bi-file-earmark-post"></i> Recent Posts
+        </h3>
+        <div class="row g-4" id="postsContainer">
+            <!-- Posts will be rendered here -->
+        </div>
+
+        <!-- Recent Polls Section -->
+        <h3 class="section-title mt-5 mb-4">
+            <i class="bi bi-bar-chart"></i> Recent Polls
+        </h3>
+        <div class="row g-4" id="pollsContainer">
+            <!-- Polls will be rendered here -->
+        </div>
+    </div>
+
+    <div class="toggle-sidebar" id="toggle-sidebar">
+        <i class="bi bi-list"></i>
+    </div>
+
+    <script>
+        // Function to render posts with improved UI
+        function renderPosts() {
+        const postsContainer = document.getElementById('postsContainer');
+        const recentPosts = <%- JSON.stringify(recentPosts) %>
+            .slice(0, 6); // Limit to 6 most recent posts
+        
+        postsContainer.innerHTML = '';
+            
+            recentPosts.forEach(post => {
+                const tags = post.Tags ? post.Tags.split(',').map(tag => 
+                    `<span class="tag">${tag.trim()}</span>`
+                ).join('') : '';
+                
+                const postTime = new Date(post.createdAt || Date.now()).toLocaleString();
+                
+                const postHTML = `
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <img src="/assets/img/${post.OwnerID.ProfileImg}" 
+                                     class="profile-avatar" 
+                                     alt="Profile Image"
+                                     onerror="this.src='/assets/img/default-profile.png'">
+                                <div class="user-info">
+                                    <h5>${post.OwnerID.FirstName} ${post.OwnerID.LastName}</h5>
+                                    <p>Bsc.${post.OwnerID.department} ${post.OwnerID.year} year</p>
+                                </div>
+                            </div>
+                            
+                            ${post.Image ? `
+                                <div class="post-image-wrapper">
+                                    <img src="/assets/img/${post.Image}" 
+                                         class="post-image" 
+                                         alt="Post Image"
+                                         onerror="this.src='/uploads/${post.Image}'">
+                                </div>
+                            ` : ''}
+                            
+                            <div class="card-body">
+                                <h4 class="post-title">${post.Title}</h4>
+                                
+                                <div class="post-meta">
+                                    <i class="bi bi-clock"></i>
+                                    <span>${postTime}</span>
+                                </div>
+                                
+                                <p class="post-caption">${post.Caption}</p>
+                                
+                                <div class="post-tags">
+                                    ${tags}
+                                </div>
+                                
+                                <div class="actions">
+                                    <button onclick="deletePost('${post._id}')" class="action-btn text-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                postsContainer.innerHTML += postHTML;
+            });
+            
+            // If no posts
+            if (recentPosts.length === 0) {
+                postsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i> No posts found
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Function to render polls with improved UI
+        function renderPolls() {
+        const pollsContainer = document.getElementById('pollsContainer');
+        const recentPolls = <%- JSON.stringify(polls) %>
+            .slice(0, 6); // Limit to 6 most recent polls
+        
+        pollsContainer.innerHTML = '';
+            
+            recentPolls.forEach(poll => {
+                const pollDate = new Date(poll.Date).toLocaleDateString();
+                const deadlineDate = new Date(poll.Deadline).toLocaleString();
+                
+                const pollHTML = `
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <img src="/assets/img/${poll.OwnerID.ProfileImg}" 
+                                     class="profile-avatar" 
+                                     alt="Profile Image"
+                                     onerror="this.src='/assets/img/default-profile.png'">
+                                <div class="user-info">
+                                    <h5>${poll.OwnerID.FirstName} ${poll.OwnerID.LastName}</h5>
+                                    <p>Bsc.${poll.OwnerID.department} ${poll.OwnerID.year} year</p>
+                                </div>
+                            </div>
+                            
+                            ${poll.Image ? `
+                                <div class="post-image-wrapper">
+                                    <img src="/assets/img/${poll.Image}" 
+                                         class="post-image" 
+                                         alt="Poll Image"
+                                         onerror="this.src='/uploads/${poll.Image}'">
+                                </div>
+                            ` : ''}
+                            
+                            <div class="card-body">
+                                <h4 class="post-title">${poll.Task}</h4>
+                                <p>${poll.Description}</p>
+                                
+                                <div class="poll-details">
+                                    <div class="poll-stat">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <div>
+                                            <strong>Event Date:</strong> ${pollDate} at ${poll.Time}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="poll-stat">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <div>
+                                            <strong>Location:</strong> ${poll.Location}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="poll-stat">
+                                        <i class="bi bi-people"></i>
+                                        <div>
+                                            <strong>Members Needed:</strong> ${poll.MaxParticipants}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="poll-stat">
+                                        <i class="bi bi-clock"></i>
+                                        <div>
+                                            <strong>Deadline:</strong> ${deadlineDate}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="actions">
+                                    <button onclick="deletePoll('${poll._id}')" class="action-btn text-danger">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                pollsContainer.innerHTML += pollHTML;
+            });
+            
+            // If no polls
+            if (recentPolls.length === 0) {
+                pollsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i> No polls found
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Toggle sidebar for mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleSidebar = document.getElementById('toggle-sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            
+            if (toggleSidebar) {
+                toggleSidebar.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.alert');
+            flashMessages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.remove('show');
+                    setTimeout(() => message.remove(), 500);
+                }, 5000);
+            });
+            
+            // Initialize renders
+            renderPosts();
+            renderPolls();
+        });
+    </script>
+    <script>
+        async function deletePost(postId) {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    const alertBox = document.createElement('div');
+    alertBox.className = 'custom-alert';
+    alertBox.innerHTML = `
+        <h4>Delete Post</h4>
+        <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+        <div class="buttons">
+            <button class="confirm-delete">Delete</button>
+            <button class="cancel-delete">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(alertBox);
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/admin/delete-post/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                renderPosts();
+                showSuccessAlert('Post has been deleted successfully.');
+                cleanup();
+            } else {
+                throw new Error('Failed to delete post');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            cleanup();
+            showErrorAlert('Failed to delete post');
+        }
+    };
+
+    alertBox.querySelector('.confirm-delete').addEventListener('click', handleDelete);
+    alertBox.querySelector('.cancel-delete').addEventListener('click', cleanup);
+
+    function cleanup() {
+        overlay.remove();
+        alertBox.remove();
+    }
+}
+
+async function deletePoll(pollId) {
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    const alertBox = document.createElement('div');
+    alertBox.className = 'custom-alert';
+    alertBox.innerHTML = `
+        <h4>Delete Poll</h4>
+        <p>Are you sure you want to delete this poll? This action cannot be undone.</p>
+        <div class="buttons">
+            <button class="confirm-delete">Delete</button>
+            <button class="cancel-delete">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(alertBox);
+
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`/admin/delete-poll/${pollId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                renderPolls();
+                showSuccessAlert('Poll has been deleted successfully.');
+                cleanup();
+            } else {
+                throw new Error('Failed to delete poll');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            cleanup();
+            showErrorAlert('Failed to delete poll');
+        }
+    };
+
+    alertBox.querySelector('.confirm-delete').addEventListener('click', handleDelete);
+    alertBox.querySelector('.cancel-delete').addEventListener('click', cleanup);
+
+    function cleanup() {
+        overlay.remove();
+        alertBox.remove();
+    }
+}
+
+// Add this helper function for success alerts
+function showSuccessAlert(message) {
+    const successAlert = document.createElement('div');
+    successAlert.className = 'alert alert-success alert-dismissible fade show';
+    successAlert.style.position = 'fixed';
+    successAlert.style.top = '20px';
+    successAlert.style.right = '20px';
+    successAlert.style.zIndex = '1100';
+    successAlert.innerHTML = `
+        <i class="bi bi-check-circle-fill me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    document.body.appendChild(successAlert);
+
+    setTimeout(() => {
+        successAlert.remove();
+    }, 5000);
+}
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
